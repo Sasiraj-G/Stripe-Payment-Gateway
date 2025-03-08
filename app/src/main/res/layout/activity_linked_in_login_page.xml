@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <Button
+        android:id="@+id/btnLinkedInLogin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="280dp"
+        android:backgroundTint="#2EA4E2"
+        android:text="Sign in with LinkedIn"
+        android:textColor="@android:color/white"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+      />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="71dp"
+        android:layout_height="45dp"
+        android:visibility="gone"
+        android:layout_below="@id/btnLinkedInLogin"
+
+     />
+
+</RelativeLayout>

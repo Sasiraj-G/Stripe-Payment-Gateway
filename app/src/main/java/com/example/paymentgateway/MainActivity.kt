@@ -34,6 +34,9 @@ class MainActivity : AppCompatActivity() {
         binding.btn.setOnClickListener {
             paymentFlow()
         }
+        binding.btn.setOnClickListener {
+
+        }
 
         paymentSheet = PaymentSheet(this, ::onPaymentSheetResult)
 
@@ -153,5 +156,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+
+
+
+
 }
 
