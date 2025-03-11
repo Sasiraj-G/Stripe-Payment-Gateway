@@ -30,6 +30,7 @@ class LinkedInLoginPage : AppCompatActivity() {
     private lateinit var webView: WebView
     private lateinit var progressBar: View
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding=ActivityLinkedInLoginPageBinding.inflate(layoutInflater)
@@ -41,6 +42,10 @@ class LinkedInLoginPage : AppCompatActivity() {
 
         binding.btnLinkedInLogin.setOnClickListener {
             initializeWebView()
+        }
+        binding.gotoPayment.setOnClickListener{
+            val intent = Intent(this,MainActivity::class.java)
+            startActivity(intent)
         }
         viewModel.linkedInUser.observe(this) { user ->
 
@@ -72,6 +77,7 @@ class LinkedInLoginPage : AppCompatActivity() {
         webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
                 val url = request?.url.toString()
+                Log.d("urlLogin", url)
 
                 if (url.startsWith(LinkedInConstants.REDIRECT_URI)) {
 

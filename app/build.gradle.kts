@@ -56,8 +56,12 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
     implementation("com.stripe:stripe-android:20.1.0")
 
+ //paypal payment
+    implementation("com.paypal.android:paypal-web-payments:1.5.0")
+    implementation("com.github.amitshekhariitbhu.Fast-Android-Networking:android-networking:1.0.4")
 
-
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.google.code.gson:gson:2.10.1")
 
 
     // Retrofit for network calls

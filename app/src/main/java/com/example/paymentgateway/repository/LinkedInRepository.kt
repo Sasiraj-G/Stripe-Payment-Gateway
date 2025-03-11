@@ -33,7 +33,7 @@ class LinkedInRepository {
             )
 
             val email = if (emailResponse.elements.isNotEmpty()) {
-                emailResponse.elements[0]._handle.emailAddress
+                emailResponse.elements[0].handleDetails.emailAddress
             } else {
                 ""
             }
