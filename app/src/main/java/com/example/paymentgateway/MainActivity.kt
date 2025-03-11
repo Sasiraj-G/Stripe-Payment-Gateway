@@ -1,11 +1,17 @@
 package com.example.paymentgateway
 
+import android.annotation.SuppressLint
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
 import android.view.View
+import android.webkit.WebResourceRequest
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -50,7 +56,9 @@ class MainActivity : AppCompatActivity() {
     var accessToken = ""
     private lateinit var uniqueId: String
     private var orderid = ""
+    private lateinit var webView: WebView
 
+    @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //paypal
@@ -71,16 +79,32 @@ class MainActivity : AppCompatActivity() {
 
 
         //paypal
+        // Setup WebView
 
-        binding.paypalBtn.visibility = View.GONE
+
+
+
+
 
         fetchAccessToken()
 
         binding.paypalBtn.setOnClickListener {
             startOrder()
-        }
+            binding.paypalWebView.loadUrl("https://www.sandbox.paypal.com/checkoutnow?token=1D492464KM295425G")
 
-        //meadia
+            binding.paypalWebView.visibility = View.VISIBLE
+            binding.paypalBtn.visibility=View.GONE
+            binding.btn.visibility=View.GONE
+            binding.mediaOptions.visibility=View.GONE
+
+        }
+        binding.paypalWebView.settings.javaScriptEnabled = true
+        binding.paypalWebView.settings.domStorageEnabled = true
+        binding.paypalWebView.settings.setSupportMultipleWindows(true)
+        binding.paypalWebView.webViewClient=WebViewClient()
+        webViewClient()
+
+        //media options
         binding.mediaOptions.setOnClickListener {
             val intent = Intent(this@MainActivity,MediaOptions::class.java)
             startActivity(intent)
@@ -214,13 +238,11 @@ class MainActivity : AppCompatActivity() {
         payPalWebCheckoutClient.listener = object : PayPalWebCheckoutListener {
 
 
-
                 override fun onPayPalWebSuccess(result: PayPalWebCheckoutResult) {
                         Log.d(TAG, "onPayPalWebSuccess: $result")
                         Log.d(TAG, "${result.toString()}")
 
                 }
-
 
             override fun onPayPalWebFailure(error: PayPalSDKError) {
                 Log.d(TAG, "onPayPalWebFailure: $error")
@@ -237,6 +259,10 @@ class MainActivity : AppCompatActivity() {
         payPalWebCheckoutClient.start(payPalWebCheckoutRequest)
 
     }
+
+
+
+
 
     private fun startOrder() {
         uniqueId = UUID.randomUUID().toString()
@@ -278,9 +304,14 @@ class MainActivity : AppCompatActivity() {
             .getAsJSONObject(object : JSONObjectRequestListener {
                 override fun onResponse(response: JSONObject) {
                     Log.d(TAG, "Order Response : $response")
+                    Log.d("trackOrderid","$response")
                     handlerOrderID(response.getString("id"))
-                }
+                    Log.d("RESURL",response.getString("id"))
 
+//                    loadPayPalCheckout(response.getString("id"))
+
+
+                }
                 override fun onError(error: ANError) {
                     Log.d(
                         TAG,
@@ -307,7 +338,7 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this@MainActivity, "Access Token Fetched!", Toast.LENGTH_SHORT)
                         .show()
 
-                    binding.paypalBtn.visibility = View.VISIBLE
+//                    binding.paypalBtn.visibility = View.VISIBLE
                 }
 
                 override fun onError(error: ANError) {
@@ -328,6 +359,7 @@ class MainActivity : AppCompatActivity() {
             .build()
             .getAsJSONObject(object : JSONObjectRequestListener {
                 override fun onResponse(response: JSONObject) {
+
                     Log.d(TAG, "Capture Response : $response")
                     Toast.makeText(this@MainActivity, "Payment Successful", Toast.LENGTH_SHORT).show()
                 }
@@ -338,16 +370,47 @@ class MainActivity : AppCompatActivity() {
                 }
             })
     }
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-        Log.d(TAG, "onNewIntent: $intent")
-        if (intent?.data!!.getQueryParameter("opType") == "payment") {
-           captureOrder(orderid)
-            Toast.makeText(this, "Payment Succssfully", Toast.LENGTH_SHORT).show()
-        } else if (intent.data!!.getQueryParameter("opType") == "cancel") {
-            Toast.makeText(this, "Payment Cancelled", Toast.LENGTH_SHORT).show()
+//    override fun onNewIntent(intent: Intent?) {
+//        super.onNewIntent(intent)
+//        Log.d(TAG, "onNewIntent: $intent")
+//        if (intent?.data!!.getQueryParameter("opType") == "payment") {
+//           captureOrder(orderid)
+//            Toast.makeText(this, "Payment Successfully", Toast.LENGTH_SHORT).show()
+//        } else if (intent.data!!.getQueryParameter("opType") == "cancel") {
+//            Toast.makeText(this, "Payment Cancelled", Toast.LENGTH_SHORT).show()
+//        }
+//    }
+
+    private fun webViewClient(){
+        binding.paypalWebView.webViewClient = object : WebViewClient() {
+            override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+                val url = request?.url.toString()
+                Log.d("WebView", "Order ID: $url")
+                    val uri = Uri.parse(url)
+                     captureOrder(orderid)
+//                    if (uri.getQueryParameter("opType") == "PayerID") {
+//                        binding.paypalWebView.visibility = View.GONE
+//                        Log.d("WebView", "WebView URL: $orderid")
+//                        Log.d("trackOrderid","onwebview "+orderid)
+//                        captureOrder(orderid)
+//                        Toast.makeText(this@MainActivity, "Payment Successfully", Toast.LENGTH_SHORT).show()
+//                        return true
+//                    }
+//                    else if (uri.getQueryParameter("opType") == "cancel") {
+//                        binding.paypalWebView.visibility = View.GONE
+//                        Toast.makeText(this@MainActivity, "Payment Cancelled", Toast.LENGTH_SHORT).show()
+//                        return true
+//                    }
+                return false
+            }
         }
+
     }
+
+
+
+
+
 
     companion object {
         const val TAG = "MyTag"
