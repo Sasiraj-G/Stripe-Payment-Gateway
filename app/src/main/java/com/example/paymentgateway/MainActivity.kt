@@ -80,10 +80,11 @@ class MainActivity : AppCompatActivity() {
             startOrder()
         }
 
-
-
-
-
+        //meadia
+        binding.mediaOptions.setOnClickListener {
+            val intent = Intent(this@MainActivity,MediaOptions::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun paymentFlow() {
