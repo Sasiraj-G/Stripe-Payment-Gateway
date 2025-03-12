@@ -81,16 +81,11 @@ class MainActivity : AppCompatActivity() {
         //paypal
         // Setup WebView
 
-
-
-
-
-
         fetchAccessToken()
 
         binding.paypalBtn.setOnClickListener {
             startOrder()
-            binding.paypalWebView.loadUrl("https://www.sandbox.paypal.com/checkoutnow?token=1D492464KM295425G")
+//            binding.paypalWebView.loadUrl("https://www.sandbox.paypal.com/checkoutnow?token=1D492464KM295425G")
 
             binding.paypalWebView.visibility = View.VISIBLE
             binding.paypalBtn.visibility=View.GONE
@@ -237,10 +232,10 @@ class MainActivity : AppCompatActivity() {
         Log.d(TAG,payPalWebCheckoutClient.toString())
         payPalWebCheckoutClient.listener = object : PayPalWebCheckoutListener {
 
-
                 override fun onPayPalWebSuccess(result: PayPalWebCheckoutResult) {
                         Log.d(TAG, "onPayPalWebSuccess: $result")
                         Log.d(TAG, "${result.toString()}")
+
 
                 }
 
@@ -258,6 +253,11 @@ class MainActivity : AppCompatActivity() {
             PayPalWebCheckoutRequest(orderID, fundingSource = PayPalWebCheckoutFundingSource.PAYPAL)
         payPalWebCheckoutClient.start(payPalWebCheckoutRequest)
 
+    }
+
+    private fun loadPayPalCheckout(approvalUrl: String) {
+        binding.paypalWebView.visibility = View.VISIBLE
+        binding.paypalWebView.loadUrl(approvalUrl)
     }
 
 
@@ -308,7 +308,14 @@ class MainActivity : AppCompatActivity() {
                     handlerOrderID(response.getString("id"))
                     Log.d("RESURL",response.getString("id"))
 
-//                    loadPayPalCheckout(response.getString("id"))
+                    try {
+                        val approvalUrl = "https://www.sandbox.paypal.com/checkoutnow?token=${orderid}"
+                        Log.d(TAG, "Generated approval URL: $approvalUrl")
+                        loadPayPalCheckout(approvalUrl)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Error generating approval URL: ${e.message}")
+                        Toast.makeText(this@MainActivity, "Error: Could not generate approval URL", Toast.LENGTH_SHORT).show()
+                    }
 
 
                 }
@@ -362,6 +369,9 @@ class MainActivity : AppCompatActivity() {
 
                     Log.d(TAG, "Capture Response : $response")
                     Toast.makeText(this@MainActivity, "Payment Successful", Toast.LENGTH_SHORT).show()
+                    binding.paypalBtn.visibility=View.VISIBLE
+                    binding.btn.visibility=View.VISIBLE
+                    binding.mediaOptions.visibility=View.VISIBLE
                 }
 
                 override fun onError(error: ANError) {
@@ -385,31 +395,26 @@ class MainActivity : AppCompatActivity() {
         binding.paypalWebView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
                 val url = request?.url.toString()
-                Log.d("WebView", "Order ID: $url")
+                Log.d(TAG, "WebView URL: $url")
                     val uri = Uri.parse(url)
-                     captureOrder(orderid)
-//                    if (uri.getQueryParameter("opType") == "PayerID") {
-//                        binding.paypalWebView.visibility = View.GONE
-//                        Log.d("WebView", "WebView URL: $orderid")
-//                        Log.d("trackOrderid","onwebview "+orderid)
-//                        captureOrder(orderid)
-//                        Toast.makeText(this@MainActivity, "Payment Successfully", Toast.LENGTH_SHORT).show()
-//                        return true
-//                    }
-//                    else if (uri.getQueryParameter("opType") == "cancel") {
-//                        binding.paypalWebView.visibility = View.GONE
-//                        Toast.makeText(this@MainActivity, "Payment Cancelled", Toast.LENGTH_SHORT).show()
-//                        return true
-//                    }
+                    Log.d(TAG, "Return URL detected: $url")
+
+                    if (uri.getQueryParameter("token") != null && uri.getQueryParameter("PayerID") != null) {
+                        Log.d(TAG, "Payment approved. Token: ${uri.getQueryParameter("token")}, PayerID: ${uri.getQueryParameter("PayerID")}")
+                        binding.paypalWebView.visibility = View.GONE
+                        captureOrder(orderid)
+                        return true
+                    } else {
+                        Log.d(TAG, "Payment appears to be canceled or has an issue")
+                        binding.paypalWebView.visibility = View.GONE
+                        Toast.makeText(this@MainActivity, "Payment Cancelled", Toast.LENGTH_SHORT).show()
+                        return true
+                    }
                 return false
             }
         }
 
     }
-
-
-
-
 
 
     companion object {

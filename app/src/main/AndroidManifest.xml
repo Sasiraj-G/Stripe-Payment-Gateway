@@ -49,8 +49,7 @@
                 <data
                     android:host="god"
                     android:scheme="com.example.paymentgateway" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
+
 
 
             </intent-filter>
