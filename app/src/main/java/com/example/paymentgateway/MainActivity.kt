@@ -2,6 +2,7 @@ package com.example.paymentgateway
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.util.Base64
@@ -22,6 +23,7 @@ import com.androidnetworking.common.Priority
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.JSONObjectRequestListener
 import com.example.paymentgateway.databinding.ActivityMainBinding
+import com.google.android.material.snackbar.Snackbar
 import com.paypal.android.corepayments.CoreConfig
 import com.paypal.android.corepayments.Environment
 import com.paypal.android.corepayments.PayPalSDKError
@@ -49,6 +51,8 @@ class MainActivity : AppCompatActivity() {
     private var apiInterface = ApiUtilities.getApiInterface()
 
 
+
+
     //pay pal
     private val clientID = "AapUYh-hiVCclsRVQuN1F2JSq11QL8I0Cjaz-NHVeGR0x1tpdqh3zUn4avLXdD-NCfy4o5sZntFwVe4_"
     private val secretID = "EA6DCIxmRiQTR8YiRskDwag8RJPrUp7bKZCoe5tX-G-48dDrxKDRDiiK6B6UFXHN9cx4723a0uDVz1KA"
@@ -73,6 +77,9 @@ class MainActivity : AppCompatActivity() {
         binding.btn.setOnClickListener {
             paymentFlow()
         }
+
+        // network connection
+
 
 
         paymentSheet = PaymentSheet(this, ::onPaymentSheetResult)
@@ -104,7 +111,17 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this@MainActivity,MediaOptions::class.java)
             startActivity(intent)
         }
+
+
     }
+
+
+
+
+    //network connection check
+
+
+
 
     private fun paymentFlow() {
 
@@ -274,7 +291,7 @@ class MainActivity : AppCompatActivity() {
                     put("reference_id", uniqueId)
                     put("amount", JSONObject().apply {
                         put("currency_code", "USD")
-                        put("value", "5.00")
+                        put("value", "10.00")
                     })
                 })
             })

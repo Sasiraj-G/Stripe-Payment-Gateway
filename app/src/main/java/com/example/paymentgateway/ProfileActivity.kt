@@ -3,6 +3,7 @@ package com.example.paymentgateway
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 
@@ -12,6 +13,7 @@ import com.example.paymentgateway.databinding.ActivityProfileBinding
 
 class ProfileActivity : AppCompatActivity() {
     lateinit var binding: ActivityProfileBinding
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +44,9 @@ class ProfileActivity : AppCompatActivity() {
            val intent = Intent(this@ProfileActivity,MainActivity::class.java)
            startActivity(intent)
         }
+
+
+
 
     }
 }

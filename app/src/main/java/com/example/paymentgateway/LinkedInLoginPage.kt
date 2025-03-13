@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.app.Dialog
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -22,6 +23,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.paymentgateway.databinding.ActivityLinkedInLoginPageBinding
 import com.example.paymentgateway.utils.LinkedInConstants
 import com.example.paymentgateway.viewmodel.LinkedInViewModel
+import com.google.android.material.snackbar.Snackbar
 
 
 class LinkedInLoginPage : AppCompatActivity() {
@@ -29,6 +31,9 @@ class LinkedInLoginPage : AppCompatActivity() {
     private lateinit var viewModel: LinkedInViewModel
     private lateinit var webView: WebView
     private lateinit var progressBar: View
+
+    private lateinit var rootView: View
+    private lateinit var checkNetworkConnection: CheckNetworkConnection
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,6 +73,10 @@ class LinkedInLoginPage : AppCompatActivity() {
             Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show()
         }
 
+//        //network connection
+//        callNetworkConnection()
+//        rootView = findViewById(android.R.id.content)
+
     }
     @SuppressLint("SetJavaScriptEnabled")
     private fun initializeWebView() {
@@ -100,6 +109,9 @@ class LinkedInLoginPage : AppCompatActivity() {
         // Add WebView to the activity
         setContentView(webView)
     }
+
+
+
 
 
 }

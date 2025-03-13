@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
+import android.view.View
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
 import com.example.paymentgateway.databinding.ActivityAudioPlayerBinding
@@ -17,6 +18,7 @@ class AudioPlayer : AppCompatActivity() {
     private var mediaPlayer: MediaPlayer? = null
     private val handler = Handler(Looper.getMainLooper())
     private var isPlaying = false
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +31,8 @@ class AudioPlayer : AppCompatActivity() {
         } else {
             finish()
         }
+        // network connection
+
 
         setupControls()
     }

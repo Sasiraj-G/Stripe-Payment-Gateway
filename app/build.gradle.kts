@@ -57,9 +57,9 @@ dependencies {
     implementation("com.stripe:stripe-android:20.1.0")
 
  //paypal payment
-    implementation("com.paypal.android:paypal-web-payments:1.5.0")
-    implementation("com.github.amitshekhariitbhu.Fast-Android-Networking:android-networking:1.0.4")
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation(libs.paypal.web.payments)
+    implementation(libs.android.networking)
+    implementation(libs.okhttp)
     implementation("com.google.code.gson:gson:2.10.1")
 
 
@@ -67,12 +67,23 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.1")
 
     // Coil for image loading
-    implementation("io.coil-kt:coil:2.2.2")
+    implementation(libs.coil)
     // ViewModel and LiveData
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
     implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.5.1")
 
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
+
+
+    //crop image
+
+    implementation("com.soundcloud.android:android-crop:1.0.1@aar")
+    implementation("com.github.bumptech.glide:glide:4.12.0")
     
+
+    //image compression
+    implementation("id.zelory:compressor:3.0.1")
+
+
 }

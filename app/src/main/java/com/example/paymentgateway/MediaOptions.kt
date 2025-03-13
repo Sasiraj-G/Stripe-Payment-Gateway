@@ -10,10 +10,12 @@ import androidx.core.content.ContextCompat
 import com.example.paymentgateway.databinding.ActivityMediaOptionsBinding
 import android.content.Intent
 import android.Manifest
+import android.view.View
 
 
 class MediaOptions : AppCompatActivity() {
     private lateinit var binding: ActivityMediaOptionsBinding
+
     private val requestPermissionsLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -24,6 +26,9 @@ class MediaOptions : AppCompatActivity() {
             Toast.makeText(this, "Some permissions were denied", Toast.LENGTH_SHORT).show()
         }
     }
+
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding=ActivityMediaOptionsBinding.inflate(layoutInflater)
@@ -40,6 +45,18 @@ class MediaOptions : AppCompatActivity() {
             openVideoPicker()
         }
         checkPermissions()
+
+        binding.cropImage.setOnClickListener {
+            val intent=Intent(this@MediaOptions,CropImage::class.java)
+            startActivity(intent)
+        }
+        binding.compressImage.setOnClickListener {
+            val intent = Intent(this@MediaOptions,CompressorImage::class.java)
+            startActivity(intent)
+        }
+
+        // network connection
+
 
     }
     private fun checkPermissions() {
@@ -73,6 +90,7 @@ class MediaOptions : AppCompatActivity() {
         ActivityResultContracts.GetContent()
     ) { uri ->
         uri?.let {
+
 
             binding.imageView.setImageURI(it)
             binding.textStatus.text = "Image loaded successfully"
