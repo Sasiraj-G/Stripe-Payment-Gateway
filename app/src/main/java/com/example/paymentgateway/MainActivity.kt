@@ -50,9 +50,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var clientSecret: String
     private var apiInterface = ApiUtilities.getApiInterface()
 
-
-
-
     //pay pal
     private val clientID = "AapUYh-hiVCclsRVQuN1F2JSq11QL8I0Cjaz-NHVeGR0x1tpdqh3zUn4avLXdD-NCfy4o5sZntFwVe4_"
     private val secretID = "EA6DCIxmRiQTR8YiRskDwag8RJPrUp7bKZCoe5tX-G-48dDrxKDRDiiK6B6UFXHN9cx4723a0uDVz1KA"
@@ -79,6 +76,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // network connection
+
 
 
 
@@ -113,10 +111,8 @@ class MainActivity : AppCompatActivity() {
         }
 
 
+
     }
-
-
-
 
     //network connection check
 

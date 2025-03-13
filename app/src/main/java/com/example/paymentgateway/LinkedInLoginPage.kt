@@ -56,7 +56,8 @@ class LinkedInLoginPage : AppCompatActivity() {
         }
 
         binding.skype.setOnClickListener {
-          //  openUrl("https://www.skype.com")
+
+
             binding.skype.openSkypeApp(number)
 
         }
@@ -87,8 +88,8 @@ class LinkedInLoginPage : AppCompatActivity() {
         }
 
 //        //network connection
-//        callNetworkConnection()
-//        rootView = findViewById(android.R.id.content)
+        callNetworkConnection()
+        rootView = findViewById(android.R.id.content)
 
     }
 
@@ -100,7 +101,8 @@ class LinkedInLoginPage : AppCompatActivity() {
             context.packageManager.getPackageInfo("com.whatsapp", PackageManager.GET_ACTIVITIES)
             context.startActivity(Intent(Intent.ACTION_VIEW).apply { data = Uri.parse(url) })
         } catch (e: PackageManager.NameNotFoundException) {
-            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+           // context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+            toastMessage("Whatsapp Not install in your device")
         }
     }
  fun View.openSkypeApp(toNumber:String){
@@ -110,9 +112,42 @@ class LinkedInLoginPage : AppCompatActivity() {
          context.packageManager.getPackageInfo("com.skype.raider.Main",PackageManager.GET_ACTIVITIES)
          context.startActivity(Intent(Intent.ACTION_VIEW).apply { data = Uri.parse(url) })
      }catch (e: PackageManager.NameNotFoundException){
-         context.startActivity(Intent(Intent.ACTION_VIEW,Uri.parse(url)))
+        // context.startActivity(Intent(Intent.ACTION_VIEW,Uri.parse(url)))
+         toastMessage("Skype Not install in your device")
      }
  }
+
+    @SuppressLint("SetTextI18n")
+     fun callNetworkConnection() {
+        checkNetworkConnection = CheckNetworkConnection(application)
+        checkNetworkConnection.observe(this) { state ->
+            when (state) {
+                NetworkState.CONNECTED -> {
+                    //showSnackbar("Network Connected")
+                    toastMessage("Network Connected")
+                }
+                NetworkState.DISCONNECTED -> {
+
+                    //showSnackbar("No Internet Connection")
+                    toastMessage("No Internet Connection")
+                }
+                NetworkState.NO_INTERNET-> {
+
+                    //showSnackbar("Wi-fi Connected But No Intenet Access")
+                    toastMessage("Wi-fi Connected But No Intenet Access")
+
+                }
+            }
+        }
+    }
+     fun showSnackbar(message: String) {
+        val snackbar = Snackbar.make(rootView, message, Snackbar.ANIMATION_MODE_SLIDE)
+        snackbar.show()
+    }
+
+    fun toastMessage(msg : String){
+        Toast.makeText(this,msg,Toast.LENGTH_SHORT).show()
+    }
 
 
 
