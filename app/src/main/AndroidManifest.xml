@@ -64,6 +64,19 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="skype" />
+            </intent-filter>
+
+            <intent-filter android:icon="@drawable/skype" android:priority="0">
+                <action android:name="android.intent.action.CALL_PRIVILEGED" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="tel" />
+            </intent-filter>
+
         </activity>
 
         <activity android:name="com.soundcloud.android.crop.CropImageActivity"

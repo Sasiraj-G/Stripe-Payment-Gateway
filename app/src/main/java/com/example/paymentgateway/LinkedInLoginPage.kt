@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.app.Dialog
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
 import android.os.Build
@@ -31,6 +32,7 @@ class LinkedInLoginPage : AppCompatActivity() {
     private lateinit var viewModel: LinkedInViewModel
     private lateinit var webView: WebView
     private lateinit var progressBar: View
+    private val number = "+917603978806"
 
     private lateinit var rootView: View
     private lateinit var checkNetworkConnection: CheckNetworkConnection
@@ -51,6 +53,17 @@ class LinkedInLoginPage : AppCompatActivity() {
         binding.gotoPayment.setOnClickListener{
             val intent = Intent(this,MainActivity::class.java)
             startActivity(intent)
+        }
+
+        binding.skype.setOnClickListener {
+          //  openUrl("https://www.skype.com")
+            binding.skype.openSkypeApp(number)
+
+        }
+
+        binding.whatsapp.setOnClickListener {
+             binding.whatsapp.openWhatsAppChat(number)
+
         }
         viewModel.linkedInUser.observe(this) { user ->
 
@@ -78,6 +91,32 @@ class LinkedInLoginPage : AppCompatActivity() {
 //        rootView = findViewById(android.R.id.content)
 
     }
+
+
+
+    fun View.openWhatsAppChat(toNumber: String) {
+        val url = "https://api.whatsapp.com/send?phone=$toNumber"
+        try {
+            context.packageManager.getPackageInfo("com.whatsapp", PackageManager.GET_ACTIVITIES)
+            context.startActivity(Intent(Intent.ACTION_VIEW).apply { data = Uri.parse(url) })
+        } catch (e: PackageManager.NameNotFoundException) {
+            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+        }
+    }
+ fun View.openSkypeApp(toNumber:String){
+     val url = "skype:$toNumber"
+//     val sky = Intent("android.intent.action.CALL_PRIVILEGED");
+     try{
+         context.packageManager.getPackageInfo("com.skype.raider.Main",PackageManager.GET_ACTIVITIES)
+         context.startActivity(Intent(Intent.ACTION_VIEW).apply { data = Uri.parse(url) })
+     }catch (e: PackageManager.NameNotFoundException){
+         context.startActivity(Intent(Intent.ACTION_VIEW,Uri.parse(url)))
+     }
+ }
+
+
+
+
     @SuppressLint("SetJavaScriptEnabled")
     private fun initializeWebView() {
         webView = WebView(this)
