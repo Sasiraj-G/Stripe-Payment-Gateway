@@ -21,8 +21,12 @@ import com.example.paymentgateway.GetAllReservationQuery
 import com.example.paymentgateway.databinding.FragmentTripListBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
+import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 
 class TripListFragment : Fragment() {
@@ -30,8 +34,8 @@ class TripListFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var apolloClient: ApolloClient
     private lateinit var epoxyController: TripEpoxyController
-//    private var dateFilter: String?= null
-    private var dateFilter = "upcomming"
+    private var dateFilter: String?= null
+ //   private var dateFilter = "upcomming"
     private var currentPage  = 1
     private var isLastPage = false
     private var isLoading = false
@@ -85,9 +89,10 @@ class TripListFragment : Fragment() {
         binding.recyclerView.apply {
             layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
             setController(epoxyController)
+        }
 
             // Add pagination scroll listener
-            addOnScrollListener(object : androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
+           binding.recyclerView.addOnScrollListener(object : androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
                 @RequiresApi(Build.VERSION_CODES.O)
                 override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
@@ -99,13 +104,13 @@ class TripListFragment : Fragment() {
                     if (!isLoading && !isLastPage) {
                         if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
                             && firstVisibleItemPosition >= 0
-                            && totalItemCount >= 20) { // Assuming page size is 20
+                            && totalItemCount >= 10) {
                             loadMoreTrips()
                         }
                     }
                 }
             })
-        }
+
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -143,6 +148,7 @@ class TripListFragment : Fragment() {
             }
         }
     }
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun loadMoreTrips() {
@@ -207,10 +213,10 @@ class TripListFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     private fun formatDate(dateString: String): String {
         try {
-            val inputFormatter = DateTimeFormatter.ISO_DATE
-            val outputFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy")
-            val date = LocalDate.parse(dateString, inputFormatter)
-            return date.format(outputFormatter)
+            val inputFormatter = Instant.ofEpochMilli(dateString.toLong())
+            val dateTime = LocalDateTime.ofInstant(inputFormatter, ZoneId.systemDefault())
+            val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm", Locale.getDefault())
+            return dateTime.format(formatter)
         } catch (e: Exception) {
             return dateString
         }

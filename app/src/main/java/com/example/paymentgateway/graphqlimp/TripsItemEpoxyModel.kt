@@ -11,17 +11,17 @@ abstract class TripItemEpoxyModel : DataBindingEpoxyModel() {
     @EpoxyAttribute
     lateinit var trip: Trip
 
-    @EpoxyAttribute
-    lateinit var onHostDetailsClick: (Trip) -> Unit
+//    @EpoxyAttribute
+//    lateinit var onHostDetailsClick: (Trip) -> Unit
 
     override fun setDataBindingVariables(binding: ViewDataBinding) {
         if (binding is ItemReservationBinding) {
             binding.trip = trip
             binding.executePendingBindings()
 
-            binding.approveBtn.setOnClickListener {
-                onHostDetailsClick(trip)
-            }
+//            binding.approveBtn.setOnClickListener {
+//                onHostDetailsClick(trip)
+//            }
         }
     }
 }

@@ -67,7 +67,7 @@ class TripsPage : Fragment() {
 
         // Connect TabLayout with ViewPager
         TabLayoutMediator(binding.tabLayout, viewPager) { tab, position ->
-            tab.text = if (position == 0) "Upcoming" else "Previous"
+            tab.text = if (position == 0) "Upcoming trips" else "Previous trips"
         }.attach()
     }
 
@@ -87,7 +87,7 @@ class TripsPage : Fragment() {
 
         override fun createFragment(position: Int): Fragment {
             return when (position) {
-                0 -> TripListFragment.newInstance("upcoming")
+                0 -> TripListFragment.newInstance("upcomming")
                 else -> TripListFragment.newInstance("previous")
             }
         }

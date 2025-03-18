@@ -3,7 +3,7 @@ package com.example.paymentgateway.graphqlimp
 import com.airbnb.epoxy.EpoxyController
 
 class TripEpoxyController(
-    private val onHostDetailsClick: (Trip) -> Unit
+    private var onHostDetailsClick: (Trip) -> Unit
 ) : EpoxyController() {
     private val trips = mutableListOf<Trip>()
 
