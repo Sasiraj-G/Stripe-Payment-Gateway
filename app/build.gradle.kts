@@ -2,8 +2,25 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     kotlin("plugin.serialization") version "2.1.10"
+    kotlin("kapt")
+    id("com.google.dagger.hilt.android")
+    id("com.apollographql.apollo3") version "3.8.0"
 }
 
+
+apollo {
+    service("service") {
+        packageName.set("com.example.paymentgateway")//your package name
+        introspection {
+            endpointUrl.set("https://staging1.flutterapps.io/api/graphql") //replace with your endpoint
+            schemaFile.set(file("src/main/graphql/schema.graphqls")) //replace with the schema file location
+        }
+    }
+}
+
+kapt {
+    correctErrorTypes = true
+}
 android {
     namespace = "com.example.paymentgateway"
     compileSdk = 34
@@ -37,6 +54,12 @@ android {
     buildFeatures {
         viewBinding = true
     }
+    buildFeatures {
+        //noinspection DataBindingWithoutKapt
+        dataBinding = true
+    }
+
+
 
 }
 
@@ -47,6 +70,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.swiperefreshlayout)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -74,6 +98,7 @@ dependencies {
 
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
 
 
     //crop image
@@ -84,6 +109,29 @@ dependencies {
 
     //image compression
     implementation("id.zelory:compressor:3.0.1")
+
+    //trips page cirlce profile
+    implementation("de.hdodenhof:circleimageview:3.1.0")
+
+    // //Epoxy
+
+    implementation("com.airbnb.android:epoxy:5.1.4")
+    kapt("com.airbnb.android:epoxy-processor:5.1.4")
+    implementation("com.airbnb.android:epoxy-databinding:5.1.4")
+
+
+    // Apollo GraphQL client
+    implementation("com.apollographql.apollo3:apollo-runtime:3.8.0")
+
+    //dagger
+    implementation("com.google.dagger:hilt-android:2.51.1")
+    kapt("com.google.dagger:hilt-compiler:2.51.1")
+
+
+
+
+
+
 
 
 }

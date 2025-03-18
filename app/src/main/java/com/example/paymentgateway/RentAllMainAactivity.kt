@@ -1,0 +1,39 @@
+package com.example.paymentgateway
+
+import android.os.Bundle
+
+import androidx.appcompat.app.AppCompatActivity
+
+import com.example.paymentgateway.databinding.ActivityRentAllMainActivityBinding
+
+class RentAllMainAactivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityRentAllMainActivityBinding
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding=ActivityRentAllMainActivityBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+
+        //load default fragment
+
+        supportFragmentManager.beginTransaction().replace(R.id.fragment_containerView,ExplorePage()).commit()
+
+        binding.bottomNavigationView.setOnItemSelectedListener { item ->
+            val selectedFragment = when(item.itemId){
+                R.id.expore -> ExplorePage()
+                R.id.wishlists -> WishListsPage()
+                R.id.trips -> TripsPage()
+                R.id.inbox -> InboxPage()
+                R.id.profile -> ProfilePage()
+                else -> ExplorePage()
+            }
+            supportFragmentManager.beginTransaction().replace(R.id.fragment_containerView,selectedFragment).commit()
+            true
+
+        }
+
+
+
+    }
+}

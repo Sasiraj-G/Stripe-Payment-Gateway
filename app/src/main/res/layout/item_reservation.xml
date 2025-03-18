@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable
+            name="trip"
+            type="com.example.paymentgateway.graphqlimp.Trip" />
+        
+    </data>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="16dp"
+            android:background="#F1E4E4">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                >
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:id="@+id/profileImage"
+                        android:background="@drawable/circle_background"
+                        android:src="@{trip.imageUrl}"/>
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:id="@+id/name"
+                        android:layout_marginStart="12dp"
+                        android:text="@{trip.displayName}"
+                        android:textStyle="bold"
+                        android:textSize="20sp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/price"
+                        android:text="@{trip.price}"
+                        android:textSize="20sp"
+                        android:textStyle="bold"/>
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Avenue 24"
+                    android:textSize="18sp"
+                    android:layout_marginTop="12dp"
+                    android:id="@+id/location"
+                    android:textColor="#7080D7"/>
+                <TextView
+                    android:id="@+id/tvAddress1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@{trip.location}"
+                    android:textColor="#666666"
+                    android:textSize="16sp"
+                    android:layout_marginTop="12dp" />
+                <TextView
+                    android:id="@+id/tvDate1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@{trip.dateRange}"
+                    android:textColor="#666666"
+                    android:textSize="16sp"
+                    android:layout_marginTop="12dp" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center_vertical">
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/phone"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/phoneNumber"
+                        android:layout_marginStart="8dp"
+                        android:text="@{trip.phone}"
+                        android:textSize="16sp"
+                        android:textColor="#7080D7"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center_vertical">
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/email_outline"
+                        />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/gmailAddress"
+                        android:text="@{trip.email}"
+                        android:layout_marginStart="8dp"
+                        android:textSize="16sp"
+                        android:textColor="#7080D7"/>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="12dp"
+                    android:background="#DDD7D7"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="16dp"
+                    >
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:text="Aproved"
+                        android:layout_marginBottom="8dp"
+                        android:backgroundTint="#16620D"
+                        android:paddingHorizontal="24dp"
+                        android:id="@+id/approveBtn"
+                        />
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="More"
+                        android:textSize="20sp"
+                        android:gravity="center_vertical"
+                        android:drawableEnd="@drawable/dots_horizontal_circle_outline"
+                        android:drawablePadding="6dp"
+                        android:textColor="#7080D7"
+
+                        />
+
+                </LinearLayout>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+
+
+
+</layout>

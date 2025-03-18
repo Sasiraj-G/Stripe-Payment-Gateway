@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/expore"
+        android:icon="@drawable/magnify"
+        android:title="Explore"/>
+    <item
+        android:id="@+id/wishlists"
+        android:icon="@drawable/heart_outline"
+        android:title="Wishlists"/>
+    <item
+        android:id="@+id/trips"
+        android:title="Trips"/>
+    <item
+        android:id="@+id/inbox"
+        android:icon="@drawable/inbox_full"
+        android:title="Inbox"/>
+    <item
+        android:id="@+id/profile"
+        android:icon="@drawable/account"
+        android:title="Profile"/>
+
+
+</menu>

@@ -57,9 +57,13 @@ class LinkedInLoginPage : AppCompatActivity() {
 
         binding.skype.setOnClickListener {
 
-
             binding.skype.openSkypeApp(number)
 
+        }
+
+        binding.rentAllBtn.setOnClickListener {
+            val intent=Intent(this,RentAllMainAactivity::class.java)
+            startActivity(intent)
         }
 
         binding.whatsapp.setOnClickListener {

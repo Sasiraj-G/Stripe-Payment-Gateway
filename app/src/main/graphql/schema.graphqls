@@ -1,0 +1,3055 @@
+type Query {
+  validateEmailExist(email: String!): CommonType
+
+  userLogin(email: String!, password: String!, deviceType: String!, deviceDetail: String, deviceId: String!): UserCommon
+
+  userAccount: WholeAccount
+
+  userLanguages: UserLanguagesType
+
+  verifyForgotPassword(email: String!, token: String!): CommonType
+
+  getListingSettings: listingSettingsCommonTypes
+
+  userSocialLogin(firstName: String, lastName: String, email: String!, dateOfBirth: String, deviceType: String!, deviceDetail: String, deviceId: String!, registerType: String, gender: String, profilePicture: String): UserCommon
+
+  getMostViewedListing: AllList
+
+  getRecommend: AllList
+
+  viewListing(listId: Int, preview: Boolean): AllListing
+
+  getListingDetails(listId: String!, preview: Boolean): AllListing
+
+  getSimilarListing(lat: Float, lng: Float, listId: Int, limit: Int): AllList
+
+  getReviews(listId: Int, currentPage: Int, hostId: String!): AllReview
+
+  SearchListing(personCapacity: Int, dates: String, currentPage: Int, lat: Float, lng: Float, roomType: [Int], bedrooms: Int, bathrooms: Int, beds: Int, amenities: [Int], safetyAmenities: [Int], spaces: [Int], houseRules: [Int], priceRange: [Int], geography: String, bookingType: String, geoType: String, address: String, currency: String, isOneTotal: Boolean): SearchListing
+
+  dateAvailability(listId: Int!, startDate: String!, endDate: String!): DateAvailabilityType
+
+  getListingSettingsCommon(step: String): listingSettingCommonTypes
+
+  getAllReservation(userType: String, currentPage: Int, dateFilter: String): AllReservation
+
+  getBillingCalculation(listId: Int!, startDate: String!, endDate: String!, guests: Int!, convertCurrency: String!, userId: String): AllBillingType
+
+  getCurrencies: AllCurrenciesType
+
+  Currency: Currency
+
+  siteSettings(type: String): SiteSettingsCommon
+
+  getSearchSettings: AllSearchSettingsType
+
+  getDateAvailability(listId: Int!, startDate: String!, endDate: String!): ContactHostAvailability
+
+  getReservation(reservationId: Int!, convertCurrency: String): Reservationlist
+
+  getUnReadCount: UnreadThreadsCount
+
+  getUnReadThreadCount(threadId: Int): UnreadThreadsCount
+
+  getAllThreads(threadType: String, threadId: Int, currentPage: Int): AllThreads
+
+  getThreads(threadType: String, threadId: Int, currentPage: Int, sortOrder: Boolean): NewThreadsCommonType
+
+  showUserProfile(profileId: Int, isUser: Boolean): ShowUserProfileCommon
+
+  userReviews(ownerType: String, currentPage: Int, profileId: Int): Reviewlist
+
+  cancelReservationData(reservationId: Int!, userType: String!, currency: String): CancellationResponse
+
+  getUserBanStatus: UserType
+
+  getAllWishListGroup(currentPage: Int): AllWishListGroup
+
+  getWishListGroup(id: Int!, currentPage: Int): GetWishListType
+
+  contactSupport(message: String, listId: Int, reservationId: Int, userType: String): UserCommon
+
+  getCountries: AllCountry
+
+  getPhoneData: UserAccount
+
+  getAllWishList: AllWishListGroup
+
+  ResendConfirmEmail: AllEmailToken
+
+  locationItem(address: String): LocationItem
+
+  showListingSteps(listId: String!): ShowListingCommon
+
+  showListPhotos(listId: Int): ListPhotosCommon
+
+  getPayouts: PayoutWholeType
+
+  ManageListings(requestType: String, currentPage: Int): WholeManageListingsType
+
+  getPaymentMethods: GetPaymentType
+
+  getListBlockedDates(listId: Int!): AllListing
+
+  getListingSpecialPrice(listId: Int!): ListBlockedDatesResponseType
+
+  getActiveSocialLogins: socialLoginsType
+
+  getPropertyReviews(listId: Int!, currentPage: Int!): Reviewlist
+
+  getUserReviews(ownerType: String, currentPage: Int): Reviewlist
+
+  getPendingUserReviews(currentPage: Int): AllReservation
+
+  getPendingUserReview(reservationId: Int!): CommonReservationType
+
+  getPaymentSettings: GetPaymentKey
+
+  getImageBanner: ImageBannerCommonType
+
+  getStaticPageContent(id: Int): StaticPageCommonType
+
+  getWhyHostData: WhyHostCommonType
+
+  getPopularLocations: PopularLocationCommonType
+
+  getApplicationVersionInfo(appType: String!, version: String!): SiteSettingsCommon
+
+  getSecureSiteSettings(settingsType: String, securityKey: String!): SiteSettingsCommon
+
+  getRoomTypeSettings: RoomTypeSettingsCommon
+
+  getAllReportType: ReportCommonType
+
+  getHomeBanner: HomeBannerCommonType
+
+  getTransactionHistory(mode: String, payoutId: Int, listId: Int, currentPage: Int, searchKey: String, convertCurrency: String): AllReservation
+
+  getListCalendar(listId: Int): ListCalendarCommonType
+}
+
+type CommonType {
+  errorMessage: String
+
+  status: Int
+}
+
+type UserCommon {
+  result: UserType
+
+  status: Int
+
+  errorMessage: String
+}
+
+type UserType {
+  id: ID!
+
+  email: String
+
+  emailConfirmed: Boolean
+
+  type: String
+
+  userBanStatus: Int
+
+  status: Int
+
+  errorMessage: String
+
+  userId: String
+
+  userToken: String
+
+  forgotLink: String
+
+  firstName: String
+
+  lastName: String
+
+  gender: String
+
+  appTheme: String
+
+  dateOfBirth: String
+
+  user: userEditProfile
+}
+
+type userEditProfile {
+  userId: ID
+
+  firstName: String
+
+  lastName: String
+
+  gender: String
+
+  appTheme: String
+
+  dateOfBirth: String
+
+  email: String
+
+  phoneNumber: String
+
+  preferredLanguage: String
+
+  preferredCurrency: String
+
+  location: String
+
+  info: String
+
+  status: String
+
+  country: Int
+
+  verificationCode: Int
+
+  profileId: Int
+
+  picture: String
+
+  createdAt: String
+
+  verification: UserVerifiedInfo
+
+  userData: UserProfile
+
+  displayName: String
+
+  countryCode: String
+
+  createdListingCount: Int
+}
+
+type UserVerifiedInfo {
+  id: Int
+
+  userId: ID!
+
+  isEmailConfirmed: Boolean
+
+  isFacebookConnected: Boolean
+
+  isGoogleConnected: Boolean
+
+  isIdVerification: Boolean
+
+  isPhoneVerified: Boolean
+
+  status: String
+}
+
+type UserProfile {
+  id: ID!
+
+  email: String
+
+  type: String
+
+  status: String
+
+  userBanStatus: Int
+}
+
+type WholeAccount {
+  result: UserAccount
+
+  status: Int
+
+  errorMessage: String
+}
+
+type UserAccount {
+  userId: ID
+
+  profileId: Int
+
+  firstName: String
+
+  lastName: String
+
+  displayName: String
+
+  gender: String
+
+  appTheme: String
+
+  dateOfBirth: String
+
+  phoneNumberStatus: String
+
+  iosDOB: String
+
+  email: String
+
+  userBanStatus: Int
+
+  phoneNumber: String
+
+  preferredLanguage: String
+
+  preferredLanguageName: String
+
+  preferredCurrency: String
+
+  location: String
+
+  info: String
+
+  createdAt: String
+
+  userDeletedAt: String
+
+  status: Int
+
+  picture: String
+
+  verification: UserVerifiedInfo
+
+  userData: UserType
+
+  country: Int
+
+  verificationCode: Int
+
+  countryName: String
+
+  countryCode: String
+
+  errorMessage: String
+
+  loginUserType: String
+
+  isAddedList: Boolean
+}
+
+type UserLanguagesType {
+  errorMessage: String
+
+  status: Int
+
+  languages: [LanguageItemType]
+
+  result: [LanguageItemType]
+}
+
+type LanguageItemType {
+  label: String
+
+  value: String
+}
+
+"""
+Represents listing field types for the frontend
+"""
+type listingSettingsCommonTypes {
+  status: Int
+
+  errorMessage: String
+
+  results: settingsType
+}
+
+"""
+Represents listing field types for the frontend
+"""
+type settingsType {
+  id: Int
+
+  roomType: listingSettingsTypes
+
+  personCapacity: listingSettingsTypes
+
+  houseType: listingSettingsTypes
+
+  buildingSize: listingSettingsTypes
+
+  bedrooms: listingSettingsTypes
+
+  beds: listingSettingsTypes
+
+  bedType: listingSettingsTypes
+
+  bathrooms: listingSettingsTypes
+
+  bathroomType: listingSettingsTypes
+
+  amenities: listingSettingsTypes
+
+  safetyAmenities: listingSettingsTypes
+
+  spaces: listingSettingsTypes
+
+  guestRequirements: listingSettingsTypes
+
+  houseRules: listingSettingsTypes
+
+  reviewGuestBook: listingSettingsTypes
+
+  bookingNoticeTime: listingSettingsTypes
+
+  maxDaysNotice: listingSettingsTypes
+
+  minNight: listingSettingsTypes
+
+  maxNight: listingSettingsTypes
+
+  cancellation: [Cancellation]
+
+  availabilityWindow: [listType]
+
+  checkInValues: [listType]
+
+  checkOutValues: [listType]
+}
+
+"""
+Represents listing field types for the frontend
+"""
+type listingSettingsTypes {
+  id: Int
+
+  typeName: String
+
+  typeLabel: String
+
+  step: String
+
+  fieldType: String
+
+  isMultiValue: Boolean
+
+  isEnable: String
+
+  status: String
+
+  listSettings: [listingSettings]
+}
+
+"""
+Represents listing field values for the frontend
+"""
+type listingSettings {
+  id: Int
+
+  typeId: Int
+
+  itemName: String
+
+  otherItemName: String
+
+  maximum: Int
+
+  minimum: Int
+
+  startValue: Int
+
+  endValue: Int
+
+  isEnable: String
+
+  image: String
+}
+
+type Cancellation {
+  id: Int
+
+  policyName: String
+
+  policyContent: String
+
+  priorDays: Int
+
+  accommodationPriorCheckIn: Float
+
+  accommodationBeforeCheckIn: Float
+
+  accommodationDuringCheckIn: Float
+
+  guestFeePriorCheckIn: Float
+
+  guestFeeBeforeCheckIn: Float
+
+  guestFeeDuringCheckIn: Float
+
+  hostFeePriorCheckIn: Float
+
+  hostFeeBeforeCheckIn: Float
+
+  hostFeeDuringCheckIn: Float
+
+  isEnable: Boolean
+
+  status: String
+
+  nonRefundableNightsPriorCheckIn: String
+
+  nonRefundableNightsBeforeCheckIn: String
+
+  nonRefundableNightsDuringCheckIn: String
+
+  subTitle: String
+
+  subContent: String
+
+  content1: String
+
+  content2: String
+
+  content3: String
+}
+
+type listType {
+  itemValue: String
+
+  itemName: String
+}
+
+type AllList {
+  results: [ShowListing]
+
+  status: Int
+
+  errorMessage: String
+}
+
+type ShowListing {
+  id: Int
+
+  userId: String
+
+  title: String
+
+  description: String
+
+  bedrooms: String
+
+  residenceType: String
+
+  buildingSize: String
+
+  beds: Int
+
+  personCapacity: Int
+
+  bathrooms: Float
+
+  country: String
+
+  street: String
+
+  buildingName: String
+
+  city: String
+
+  state: String
+
+  zipcode: String
+
+  lat: Float
+
+  lng: Float
+
+  dates: String
+
+  coverPhoto: Int
+
+  listCoverPhoto: listPhotosData
+
+  listPhotos: [listPhotosData]
+
+  listPhotoName: String
+
+  listingPhotos: [listPhotosData]
+
+  isMapTouched: Boolean
+
+  bookingType: String
+
+  isPublished: Boolean
+
+  isReady: Boolean
+
+  listApprovalStatus: String
+
+  status: String
+
+  updatedAt: String
+
+  lastUpdatedAt: String
+
+  createdAt: String
+
+  count: Int
+
+  user: user
+
+  settingsData: [userListingData]
+
+  roomType: String
+
+  listBedTypes: [listBedTypes]
+
+  listingData: listingData
+
+  serviceFees: [ServiceFees]
+
+  blockedDates: [listBlockedDates]
+
+  checkInBlockedDates: [listBlockedDates]
+
+  fullBlockedDates: [listBlockedDates]
+
+  listingSteps: userListingSteps
+
+  recommend: recommend
+
+  reviewsCount: Int
+
+  reviewsStarRating: Int
+
+  reviews: [Reviews]
+
+  calendars: [ListCalendar]
+
+  wishListStatus: Boolean
+
+  wishListGroupCount: Int
+
+  isListOwner: Boolean
+
+  userBedsTypes: [BedTypes]
+
+  userAmenities: [allListSettingTypes]
+
+  userSafetyAmenities: [allListSettingTypes]
+
+  userSpaces: [allListSettingTypes]
+
+  houseRules: [allListSettingTypes]
+
+  houseType: String
+
+  popularLocationListing: [PopularLocationListing]
+
+  declinedReason: String
+
+  currentDate: String
+
+  currentDateTime: String
+}
+
+type listPhotosData {
+  id: Int
+
+  listId: Int
+
+  name: String
+
+  type: String
+
+  status: String
+}
+
+type user {
+  email: String
+
+  profile: profile
+
+  verification: UserVerifiedInfo
+
+  userBanStatus: Int
+}
+
+type profile {
+  profileId: Int
+
+  firstName: String
+
+  lastName: String
+
+  displayName: String
+
+  dateOfBirth: String
+
+  picture: String
+
+  location: String
+
+  info: String
+
+  createdAt: String
+}
+
+type userListingData {
+  id: Int
+
+  settingsId: Int
+
+  listsettings: singleListSettings
+}
+
+type singleListSettings {
+  id: Int
+
+  typeId: Int
+
+  itemName: String
+
+  otherItemName: String
+
+  maximum: Int
+
+  minimum: Int
+
+  startValue: Int
+
+  endValue: Int
+
+  isEnable: String
+
+  image: String
+
+  settingsType: listSettingsTypes
+}
+
+type listSettingsTypes {
+  id: Int
+
+  typeName: String
+
+  typeLabel: String
+
+  step: String
+
+  fieldType: String
+
+  isEnable: String
+
+  status: String
+}
+
+type listBedTypes {
+  bedType: Int
+
+  listsettings: singleListSettings
+}
+
+type listingData {
+  bookingNoticeTime: String
+
+  checkInStart: String
+
+  checkInEnd: String
+
+  maxDaysNotice: String
+
+  minNight: Int
+
+  maxNight: Int
+
+  basePrice: Float
+
+  cleaningPrice: Float
+
+  tax: Float
+
+  currency: String
+
+  weeklyDiscount: Float
+
+  monthlyDiscount: Float
+
+  cancellationPolicy: Int
+
+  dates: String
+
+  cancellation: Cancellation
+
+  oneTotalPrice: oneTotalPrice
+}
+
+type oneTotalPrice {
+  oneTotalPrice: Float
+
+  isAverage: Float
+
+  dayDifference: Int
+
+  isDayTotal: Float
+
+  discount: Float
+
+  cleaningPrice: Float
+
+  serviceFee: Float
+}
+
+type ServiceFees {
+  id: Int
+
+  guestType: String
+
+  guestValue: Float
+
+  hostType: String
+
+  hostValue: Float
+
+  currency: String
+
+  status: String
+}
+
+type listBlockedDates {
+  blockedDates: String
+
+  reservationId: Int
+
+  listId: Int
+
+  calendarStatus: String
+
+  isSpecialPrice: Float
+
+  dayStatus: String
+}
+
+type userListingSteps {
+  id: Int
+
+  listId: Int
+
+  step1: String
+
+  step2: String
+
+  step3: String
+
+  currentStep: Int
+
+  status: String
+}
+
+type recommend {
+  id: Int
+
+  listId: Int
+
+  status: String
+}
+
+type Reviews {
+  id: Int
+
+  reservationId: Int
+
+  loadCount: Int
+
+  listId: Int
+
+  listData: AdminListing
+
+  authorId: String
+
+  authorData: userProfile
+
+  userId: String
+
+  userData: userProfile
+
+  reviewContent: String
+
+  rating: Float
+
+  privateFeedback: String
+
+  parentId: Int
+
+  automated: Boolean
+
+  response: ReviewResponse
+
+  yourReviewsCount: Int
+
+  reviewsCount: Int
+
+  createdAt: String
+
+  updatedAt: String
+
+  status: String
+
+  isAdmin: Boolean
+
+  listTitle: String
+}
+
+type AdminListing {
+  id: Int
+
+  userId: String
+
+  title: String
+
+  description: String
+
+  bedrooms: String
+
+  residenceType: String
+
+  buildingSize: String
+
+  beds: Int
+
+  personCapacity: Int
+
+  bathrooms: Float
+
+  country: String
+
+  street: String
+
+  buildingName: String
+
+  city: String
+
+  state: String
+
+  zipcode: String
+
+  lat: Float
+
+  lng: Float
+
+  coverPhoto: Int
+
+  listApprovalStatus: String
+}
+
+type userProfile {
+  userId: String
+
+  userData: UserType
+
+  userVerification: UserVerifiedInfo
+
+  reviewsCount: Int
+
+  overallRating: Int
+
+  profileId: Int
+
+  firstName: String
+
+  lastName: String
+
+  displayName: String
+
+  dateOfBirth: String
+
+  picture: String
+
+  location: String
+
+  phoneNumber: String
+
+  fullPhoneNumber: String
+
+  verifiedPhoneNumber: String
+
+  info: String
+
+  createdAt: String
+}
+
+type ReviewResponse {
+  id: Int
+
+  reservationId: Int
+
+  listId: Int
+
+  authorId: String
+
+  authorData: userProfile
+
+  userId: String
+
+  userData: userProfile
+
+  reviewContent: String
+
+  rating: Float
+
+  privateFeedback: String
+
+  parentId: Int
+
+  automated: Boolean
+
+  createdAt: String
+
+  updatedAt: String
+
+  status: String
+
+  isAdmin: Boolean
+}
+
+type ListCalendar {
+  id: Int!
+
+  listId: Int!
+
+  name: String
+
+  url: String
+
+  status: String
+}
+
+type BedTypes {
+  id: Int
+
+  listId: Int
+
+  bedCount: Int
+
+  bedType: Int
+
+  bedName: String
+
+  listsettings: listingSettingCommonTypes
+}
+
+"""
+Represents listing field types for the frontend
+"""
+type listingSettingCommonTypes {
+  status: Int
+
+  errorMessage: String
+
+  results: [listingSettingsTypesCommon]
+}
+
+"""
+Represents listing field types for the frontend
+"""
+type listingSettingsTypesCommon {
+  id: Int
+
+  typeName: String
+
+  typeLabel: String
+
+  step: String
+
+  fieldType: String
+
+  isMultiValue: Boolean
+
+  isEnable: String
+
+  status: String
+
+  listSettings: [listingSettingsCommon]
+}
+
+"""
+Represents listing field values for the frontend
+"""
+type listingSettingsCommon {
+  id: Int
+
+  typeId: Int
+
+  itemName: String
+
+  otherItemName: String
+
+  maximum: Int
+
+  minimum: Int
+
+  startValue: Int
+
+  endValue: Int
+
+  isEnable: String
+
+  image: String
+}
+
+type allListSettingTypes {
+  id: Int
+
+  itemName: String
+
+  image: String
+}
+
+type PopularLocationListing {
+  id: Int
+
+  location: String
+
+  locationAddress: String
+
+  image: String
+
+  isEnable: String
+
+  createdAt: String
+
+  updatedAt: String
+
+  status: String
+}
+
+type AllListing {
+  results: ShowListing
+
+  status: Int
+
+  errorMessage: String
+}
+
+type AllReview {
+  results: [Reviews]
+
+  count: Int
+
+  status: Int
+}
+
+type SearchListing {
+  count: Int
+
+  currentPage: Int
+
+  results: [ShowListing]
+
+  status: Int
+
+  errorMessage: String
+}
+
+type DateAvailabilityType {
+  results: [DateAvailability]
+
+  status: Int
+
+  errorMessage: String
+}
+
+type DateAvailability {
+  blockedDates: [String]
+
+  status: Int
+}
+
+type AllReservation {
+  reservationData: [Reservation]
+
+  result: [Reservation]
+
+  results: [Reservation]
+
+  count: Int
+
+  currentPage: Int
+
+  status: Int
+
+  errorMessage: String
+
+  totalData: [Reservation]
+
+  totalCount: Int
+
+  pendingPayouts: Float
+
+  paidOut: Float
+}
+
+type Reservation {
+  id: Int
+
+  listId: Int
+
+  listTitle: String
+
+  nights: Int
+
+  listData: ShowListing
+
+  listingData: ShowListing
+
+  hostId: String
+
+  hostPayout: Payout
+
+  hostTransaction: TransactionHistory
+
+  hostData: userProfile
+
+  guestId: String
+
+  guestData: userProfile
+
+  transaction: TransactionType
+
+  refundStatus: TransactionType
+
+  guestUser: UserType
+
+  hostUser: UserType
+
+  checkIn: String
+
+  checkOut: String
+
+  guests: Int
+
+  message: String
+
+  basePrice: Float
+
+  cleaningPrice: Float
+
+  taxPrice: Float
+
+  taxValue: Float
+
+  currency: String
+
+  discount: Float
+
+  discountType: String
+
+  guestServiceFee: Float
+
+  hostServiceFee: Float
+
+  total: Float
+
+  totalWithGuestServiceFee: Float
+
+  confirmationCode: Int
+
+  reservationState: String
+
+  paymentState: String
+
+  payoutId: Int
+
+  paymentMethodId: Int
+
+  messageData: Threads
+
+  messageThreadId: Threads
+
+  cancellationDetails: CancellationDetails
+
+  createdAt: String
+
+  updatedAt: String
+
+  count: Int
+
+  status: String
+
+  errorMessage: String
+
+  cardToken: String
+
+  threadData: ThreadItems
+
+  cancellationPolicy: Int
+
+  isSpecialPriceAverage: Float
+
+  checkInStart: String
+
+  checkInEnd: String
+
+  hostServiceFeeType: String
+
+  hostServiceFeeValue: Float
+
+  bookingType: String
+
+  totalNightsAmount: Float
+
+  totalWithHostServiceFee: Float
+
+  threadId: Int
+}
+
+type Payout {
+  id: Int
+
+  methodId: Int
+
+  paymentMethod: PaymentMethods
+
+  userId: String
+
+  payEmail: String
+
+  address1: String
+
+  address2: String
+
+  city: String
+
+  state: String
+
+  zipcode: String
+
+  country: String
+
+  currency: String
+
+  default: Boolean
+
+  createdAt: String
+
+  updatedAt: String
+
+  status: Int
+
+  last4Digits: Int
+
+  errorMessage: String
+
+  firstName: String
+
+  lastName: String
+
+  routingNumber: String
+
+  accountNumber: String
+
+  ssn4Digits: String
+
+  isVerified: Boolean
+}
+
+type PaymentMethods {
+  id: Int
+
+  name: String
+
+  processedIn: String
+
+  fees: String
+
+  currency: String
+
+  details: String
+
+  isEnable: Boolean
+
+  createdAt: String
+
+  updatedAt: String
+
+  status: String
+
+  paymentType: Int
+
+  imageUrl: String
+
+  errorMessage: String
+}
+
+type TransactionHistory {
+  id: Int
+
+  reservationId: Int
+
+  payoutId: Int
+
+  payoutEmail: String
+
+  amount: Float
+
+  fees: Float
+
+  currency: String
+
+  createdAt: String
+
+  updatedAt: String
+
+  status: String
+}
+
+type TransactionType {
+  id: Int
+
+  reservationId: Int
+
+  payerEmail: String
+
+  payerId: String
+
+  receiverEmail: String
+
+  receiverId: String
+
+  transactionId: String
+
+  total: Float
+
+  transactionFee: Float
+
+  currency: String
+
+  ipn_track_id: String
+
+  paymentType: String
+
+  createdAt: String
+
+  updatedAt: String
+
+  status: String
+
+  paymentMethodId: Int
+}
+
+type Threads {
+  id: Int
+
+  listId: Int
+
+  userBanStatus: Int
+
+  host: String
+
+  guest: String
+
+  createdAt: String
+
+  status: String
+
+  listData: ShowListing
+
+  hostProfile: userProfile
+
+  hostUserData: UserType
+
+  guestProfile: userProfile
+
+  guestUserData: UserType
+
+  threadItems: [ThreadItems]
+
+  threadItemsCount: Int
+
+  threadItem: ThreadItems
+
+  threadItemForType: ThreadItems
+
+  threadItemUnread: ThreadItems
+
+  hostUnreadCount: Int
+
+  isRead: Boolean
+}
+
+type ThreadItems {
+  id: Int
+
+  threadId: Int
+
+  reservationId: Int
+
+  sentBy: String
+
+  content: String
+
+  type: String
+
+  startDate: String
+
+  endDate: String
+
+  personCapacity: Int
+
+  isRead: Boolean
+
+  createdAt: String
+
+  status: Int
+
+  userBanStatus: Int
+
+  cancelData: CancellationDetails
+
+  errorMessage: String
+}
+
+type CancellationDetails {
+  id: Int
+
+  reservationId: Int
+
+  cancellationPolicy: String
+
+  refundToGuest: Float
+
+  payoutToHost: Float
+
+  guestServiceFee: Float
+
+  hostServiceFee: Float
+
+  total: Float
+
+  currency: String
+
+  status: Int
+
+  createdAt: String
+
+  errorMessage: String
+
+  isTaxRefunded: Boolean
+}
+
+type AllBillingType {
+  result: BillingType
+
+  status: Int
+
+  errorMessage: String
+}
+
+type BillingType {
+  availableStatus: String
+
+  checkIn: String
+
+  checkOut: String
+
+  nights: Int
+
+  basePrice: Float
+
+  cleaningPrice: Float
+
+  currency: String
+
+  discount: Float
+
+  discountLabel: String
+
+  guestServiceFee: Float
+
+  hostServiceFee: Float
+
+  total: Float
+
+  guestServiceFeePercentage: Float
+
+  hostServiceFeePercentage: Float
+
+  weeklyDiscountPercentage: Float
+
+  monthlyDiscountPercentage: Float
+
+  subtotal: Float
+
+  guests: Int
+
+  taxPrice: Float
+
+  noConversionTax: Float
+
+  averagePrice: Float
+
+  priceForDays: Float
+
+  specialPricing: [SpecialPricingType]
+
+  isSpecialPriceAssigned: Boolean
+
+  hostServiceFeeType: String
+
+  hostServiceFeeValue: Float
+
+  isEmailConfirmed: Boolean
+
+  profilePicture: String
+
+  taxValue: Float
+
+  discountValue: Float
+
+  guestServiceFeeValue: Float
+
+  hostServiceFeeNoConvertValue: Float
+
+  averagePriceValue: Float
+
+  totalValue: Float
+}
+
+type SpecialPricingType {
+  blockedDates: String
+
+  isSpecialPrice: Float
+}
+
+type AllCurrenciesType {
+  results: [Currencies]
+
+  status: Int
+
+  errorMessage: String
+}
+
+type Currencies {
+  id: Int
+
+  symbol: String
+
+  isEnable: Boolean
+
+  isPayment: Boolean
+
+  isBaseCurrency: Boolean
+
+  status: Int
+}
+
+type Currency {
+  base: String
+
+  date: String
+
+  rates: String
+
+  status: Int
+
+  errorMessage: String
+
+  result: AllRatesType
+}
+
+type AllRatesType {
+  currencyCode: String
+
+  rate: Float
+
+  base: String
+
+  rates: String
+}
+
+type SiteSettingsCommon {
+  results: [SiteSettings]
+
+  status: Int
+
+  errorMessage: String
+
+  result: ApplicationVersion
+}
+
+type SiteSettings {
+  id: Int
+
+  title: String
+
+  name: String
+
+  value: String
+
+  type: String
+
+  status: String
+}
+
+type ApplicationVersion {
+  appStoreUrl: String
+
+  playStoreUrl: String
+}
+
+type AllSearchSettingsType {
+  results: SearchSettingsType
+
+  status: Int
+
+  errorMessage: String
+}
+
+type SearchSettingsType {
+  id: Int
+
+  minPrice: Float
+
+  maxPrice: Float
+
+  priceRangeCurrency: String
+}
+
+type ContactHostAvailability {
+  listId: Int!
+
+  startDate: String!
+
+  endDate: String!
+
+  status: String
+}
+
+type Reservationlist {
+  results: Reservation
+
+  status: Int
+
+  errorMessage: String
+
+  convertedBasePrice: Float
+
+  convertedIsSpecialAverage: Float
+
+  convertedTotalNightsAmount: Float
+
+  convertedGuestServicefee: Float
+
+  convertedHostServiceFee: Float
+
+  convertTotalWithGuestServiceFee: Float
+
+  convertedCleaningPrice: Float
+
+  convertedTaxPrice: Float
+
+  convertedDiscount: Float
+
+  convertedTotalWithHostServiceFee: Float
+}
+
+type UnreadThreadsCount {
+  results: UnReadCount
+
+  status: Int
+
+  errorMessage: String
+}
+
+type UnReadCount {
+  hostCount: Int
+
+  guestCount: Int
+
+  total: Int
+
+  userBanStatus: Int
+
+  isUnReadMessage: Boolean
+
+  messageCount: Int
+}
+
+type AllThreads {
+  results: [Threads]
+
+  count: Int
+
+  status: Int
+
+  errorMessage: String
+}
+
+type NewThreadsCommonType {
+  results: NewThreadsType
+
+  status: Int
+
+  errorMessage: String
+}
+
+type NewThreadsType {
+  listId: Int
+
+  guest: String
+
+  threadItems: [ThreadItems]
+
+  hostProfile: userProfile
+
+  guestProfile: userProfile
+
+  getThreadCount: Int
+
+  threadItemForType: ThreadItems
+}
+
+type ShowUserProfileCommon {
+  results: ShowUserProfile
+
+  status: Int
+
+  errorMessage: String
+}
+
+type ShowUserProfile {
+  userId: String
+
+  profileId: Int
+
+  firstName: String
+
+  lastName: String
+
+  gender: String
+
+  appTheme: String
+
+  dateOfBirth: String
+
+  phoneNumber: String
+
+  preferredLanguage: String
+
+  preferredCurrency: String
+
+  location: String
+
+  info: String
+
+  createdAt: String
+
+  picture: String
+
+  country: String
+
+  profileBanStatus: UserType
+
+  userVerifiedInfo: UserVerifiedInfo
+
+  reviewsCount: Int
+
+  userData: userProfile
+
+  reviews: [Reviews]
+}
+
+type Reviewlist {
+  results: [Reviews]
+
+  count: Int
+
+  currentPage: Int
+
+  ownerType: String
+
+  status: Int
+
+  errorMessage: String
+
+  overallRating: Int
+}
+
+type CancellationResponse {
+  results: ReservationCancel
+
+  status: Int
+
+  errorMessage: String
+}
+
+type ReservationCancel {
+  reservationId: Int
+
+  cancellationPolicy: String
+
+  refundToGuest: Float
+
+  payoutToHost: Float
+
+  threadId: Int
+
+  checkIn: String
+
+  checkOut: String
+
+  guests: Int
+
+  cancelledBy: String
+
+  startedIn: Int
+
+  stayingFor: Float
+
+  currency: String
+
+  hostEmail: String
+
+  listId: Int
+
+  guestServiceFee: Float
+
+  hostServiceFee: Float
+
+  total: Float
+
+  confirmationCode: Int
+
+  listTitle: String
+
+  nonRefundableNightPrice: Float
+
+  guestEmail: String
+
+  totalPrice: Float
+
+  hostName: String
+
+  status: String
+
+  guestName: String
+
+  errorMessage: String
+
+  hostProfilePicture: String
+
+  guestProfilePicture: String
+
+  listData: ShowListing
+
+  isSpecialPriceAverage: Float
+
+  isTaxRefunded: Boolean
+
+  refundDays: Int
+
+  totalNights: Int
+}
+
+type AllWishListGroup {
+  results: [WishListGroup]
+
+  count: Int
+
+  status: Int
+
+  errorMessage: String
+}
+
+type WishListGroup {
+  id: Int
+
+  name: String
+
+  userId: ID!
+
+  isPublic: String
+
+  createdAt: String
+
+  updatedAt: String
+
+  status: Int
+
+  errorMessage: String
+
+  currentPage: Int
+
+  wishListCount: Int
+
+  wishListCover: WishList
+
+  wishLists: [WishList]
+
+  wishListIds: [Int]
+}
+
+type WishList {
+  id: Int
+
+  wishListGroupId: Int
+
+  eventkey: Boolean
+
+  listId: Int
+
+  results: WishListTypeData
+
+  userId: ID!
+
+  createdAt: String
+
+  updatedAt: String
+
+  status: Int
+
+  errorMessage: String
+
+  listData: ShowListing
+
+  count: Int
+
+  isListActive: Boolean
+}
+
+type WishListTypeData {
+  wishListGroupId: Int
+
+  listId: Int
+
+  eventkeyValue: Boolean
+}
+
+type GetWishListType {
+  results: WishListGroup
+
+  status: Int
+
+  errorMessage: String
+}
+
+type AllCountry {
+  results: [Country]
+
+  status: Int
+
+  errorMessage: String
+}
+
+type Country {
+  id: Int
+
+  countryCode: String
+
+  countryName: String
+
+  isEnable: Boolean
+
+  status: String
+
+  dialCode: String
+}
+
+type AllEmailToken {
+  results: emailToken
+
+  status: Int
+
+  errorMessage: String
+}
+
+type emailToken {
+  id: String
+
+  userId: String
+
+  profile: userProfile
+
+  token: String
+
+  email: String
+
+  createdAt: String
+
+  status: String
+}
+
+type LocationItem {
+  address: String
+
+  street: String
+
+  country: String
+
+  city: String
+
+  state: String
+
+  zipcode: String
+
+  lat: Float
+
+  lng: Float
+
+  status: Int
+}
+
+type ShowListingCommon {
+  results: ShowListingSteps
+
+  status: Int
+
+  errorMessage: String
+}
+
+type ShowListingSteps {
+  id: Int
+
+  listId: Int
+
+  step1: String
+
+  step2: String
+
+  step3: String
+
+  listing: ShowListing
+
+  currentStep: Int
+
+  status: Int
+
+  errorMessage: String
+
+  isPhotosAdded: Boolean
+}
+
+type ListPhotosCommon {
+  results: [ListPhotos]
+
+  status: Int
+
+  errorMessage: String
+}
+
+type ListPhotos {
+  id: Int!
+
+  listId: Int!
+
+  name: String
+
+  type: String
+
+  isCover: Int
+
+  photosCount: Int
+
+  status: String
+}
+
+type PayoutWholeType {
+  results: [Payout]
+
+  status: Int
+
+  errorMessage: String
+}
+
+type WholeManageListingsType {
+  count: Int
+
+  currentPage: Int
+
+  completedListCount: Int
+
+  results: [ShowListing]
+
+  status: Int
+
+  errorMessage: String
+}
+
+type GetPaymentType {
+  results: [PaymentMethods]
+
+  status: Int
+
+  errorMessage: String
+}
+
+type ListBlockedDatesResponseType {
+  results: [ListBlockedDates]
+
+  blockedDatesList: [[String]]
+
+  specialPriceDates: [ListBlockedDates]
+
+  status: Int
+
+  errorMessage: String
+
+  calendarId: Int
+}
+
+type ListBlockedDates {
+  id: Int
+
+  listId: Int
+
+  reservationId: Int
+
+  calendarId: Int
+
+  blockedDates: String
+
+  blockedDatesString: String
+
+  status: Int
+
+  errorMessage: String
+
+  calendarStatus: String
+
+  isSpecialPrice: Float
+
+  listCurrency: String
+
+  dayStatus: String
+}
+
+type socialLoginsType {
+  errorMessage: String
+
+  status: Int
+
+  results: resultType
+}
+
+type resultType {
+  facebook: Boolean
+
+  google: Boolean
+}
+
+type CommonReservationType {
+  result: Reservation
+
+  results: [Reservation]
+
+  count: Int
+
+  currentPage: Int
+
+  status: Int
+
+  errorMessage: String
+}
+
+type GetPaymentKey {
+  result: StripeKeysType
+
+  status: Int
+
+  errorMessage: String
+}
+
+type StripeKeysType {
+  secretKey: String
+
+  publishableKey: String
+}
+
+type ImageBannerCommonType {
+  result: ImageBanner
+
+  status: Int
+
+  errorMessage: String
+}
+
+type ImageBanner {
+  id: Int
+
+  title: String
+
+  description: String
+
+  buttonLabel: String
+
+  image: String
+
+  status: String
+}
+
+type StaticPageCommonType {
+  status: Int
+
+  errorMessage: String
+
+  result: StaticPageType
+
+  results: [StaticPageType]
+}
+
+type StaticPageType {
+  id: Int
+
+  pageName: String
+
+  metaTitle: String
+
+  metaDescription: String
+
+  content: String
+
+  createdAt: String
+}
+
+type WhyHostCommonType {
+  status: Int
+
+  errorMessage: String
+
+  result: WhyHostType
+
+  results: [WhyHostType]
+}
+
+type WhyHostType {
+  id: Int
+
+  imageName: String
+
+  title: String
+
+  buttonLabel: String
+}
+
+type PopularLocationCommonType {
+  status: Int
+
+  errorMessage: String
+
+  result: PopularLocationListing
+
+  results: [PopularLocationListing]
+}
+
+type RoomTypeSettingsCommon {
+  status: Int
+
+  results: [RoomTypeSettings]
+
+  errorMessage: String
+}
+
+type RoomTypeSettings {
+  id: Int
+
+  typeId: Int
+
+  itemName: String
+
+  otherItemName: String
+
+  maximum: Int
+
+  minimum: Int
+
+  startValue: Int
+
+  endValue: Int
+
+  isEnable: String
+
+  image: String
+}
+
+type ReportCommonType {
+  results: [ReportType]
+
+  status: Int
+
+  errorMessage: String
+}
+
+type ReportType {
+  id: Int
+
+  reportContent: String
+
+  reportType: String
+}
+
+type HomeBannerCommonType {
+  result: HomeBannerType
+
+  status: Int
+
+  errorMessage: String
+}
+
+type HomeBannerType {
+  id: Int
+
+  title: String
+
+  content: String
+
+  isEnable: Boolean
+}
+
+type ListCalendarCommonType {
+  results: [ListCalendar]
+
+  status: Int
+
+  errorMessage: String
+}
+
+type Mutation {
+  createUser(firstName: String, lastName: String, email: String!, password: String!, dateOfBirth: String, deviceType: String!, deviceDetail: String, deviceId: String!, registerType: String): UserCommon
+
+  testToken(token: String): UserType
+
+  userLogout(deviceType: String!, deviceId: String!): UserType
+
+  userUpdate(userId: String!, fieldName: String!, fieldValue: String, deviceType: String!, deviceId: String!): UserType
+
+  userForgotPassword(email: String!): UserType
+
+  updateForgotPassword(email: String!, password: String!, token: String!): UserType
+
+  CreateEnquiry(listId: Int!, hostId: String!, content: String!, userId: String!, type: String, startDate: String!, endDate: String!, personCapacity: Int): Enquiry
+
+  createReservation(listId: Int!, checkIn: String!, checkOut: String!, guests: Int!, message: String!, basePrice: Float!, cleaningPrice: Float, currency: String!, discount: Float, discountType: String, guestServiceFee: Float, hostServiceFee: Float, total: Float!, bookingType: String, paymentType: Int, cardToken: String, convCurrency: String!, specialPricing: String, averagePrice: Float, nights: Int, paymentCurrency: String, threadId: Int): ReservationPayment
+
+  confirmReservation(reservationId: Int!, paymentIntentId: String!): ReservationPayment
+
+  cancelReservation(reservationId: Int!, cancellationPolicy: String!, refundToGuest: Float!, payoutToHost: Float!, guestServiceFee: Float!, hostServiceFee: Float!, total: Float!, currency: String!, threadId: Int!, cancelledBy: String!, message: String!, checkIn: String!, checkOut: String!, guests: Int!, isTaxRefunded: Boolean): Reservationlist
+
+  sendMessage(threadId: Int!, content: String, type: String, startDate: String, endDate: String, personCapacity: Int, reservationId: Int): SendMessage
+
+  readMessage(threadId: Int!): SendMessage
+
+  createReportUser(reporterId: String, userId: String, reportType: String, profileId: Int): ReportUserResult
+
+  userUpdateCommon(userId: String!, deviceType: String!, deviceId: String!, firstName: String, lastName: String, gender: String, location: String, dateOfBirth: String): UserType
+
+  CreateWishList(listId: Int, wishListGroupId: Int, eventKey: Boolean): WishList
+
+  CreateWishListGroup(name: String, isPublic: String, id: Int): GetWishListType
+
+  DeleteWishListGroup(id: Int): WishListGroup
+
+  UpdateWishListGroup(isPublic: Int, id: Int): WishListGroup
+
+  AddPhoneNumber(countryCode: String!, phoneNumber: String!, countryName: String): UserAccount
+
+  RemovePhoneNumber: UserAccount
+
+  EmailVerification(token: String!, email: String!): AllEmailToken
+
+  VerifyPhoneNumber(verificationCode: Int!): UserAccount
+
+  SocialVerification(verificationType: String!, actionType: String!): SocialVerification
+
+  createListing(listId: Int, roomType: String, houseType: String, residenceType: String, bedrooms: String, buildingSize: String, bedType: String, beds: Int, personCapacity: Int, bathrooms: Float, bathroomType: String, country: String, street: String, buildingName: String, city: String, state: String, zipcode: String, lat: Float, lng: Float, bedTypes: String, isMapTouched: Boolean, amenities: [Int], safetyAmenities: [Int], spaces: [Int]): ListingResponse
+
+  updateListingStep2(id: Int, title: String, description: String, coverPhoto: Int): EditListingResponse
+
+  ManageListingSteps(listId: String!, currentStep: Int!): ShowListingCommon
+
+  updateListingStep3(id: Int, houseRules: [Int], bookingNoticeTime: String, checkInStart: String, checkInEnd: String, maxDaysNotice: String, minNight: Int, maxNight: Int, basePrice: Float, cleaningPrice: Float, tax: Float, currency: String, weeklyDiscount: Int, monthlyDiscount: Int, blockedDates: [String], bookingType: String!, cancellationPolicy: Int, weekDiscount: Float, monthDiscount: Float): EditListingResponse
+
+  managePublishStatus(listId: Int!, action: String!): AllList
+
+  RemoveListPhotos(listId: Int!, name: String): ListPhotosCommon
+
+  setDefaultPayout(id: Int!, type: String!): Payout
+
+  addPayout(methodId: Int, payEmail: String, address1: String, address2: String, city: String, state: String, country: String, zipcode: String, currency: String, firstname: String, lastname: String, accountNumber: String, routingNumber: String, businessType: String, accountToken: String, personToken: String): GetPayoutType
+
+  RemoveListing(listId: Int!): ListPhotosCommon
+
+  RemoveMultiPhotos(photos: String): ListPhotosCommon
+
+  UpdateListBlockedDates(listId: Int!, blockedDates: [String]): ListBlockedDatesResponseType
+
+  ReservationStatus(threadId: Int!, content: String, type: String, startDate: String, endDate: String, personCapacity: Int, reservationId: Int, actionType: String): SendMessage
+
+  userFeedback(type: String, message: String): ReportUserResult
+
+  UpdateSpecialPrice(listId: Int!, blockedDates: [String], calendarStatus: String, isSpecialPrice: Float): ListBlockedDatesResponseType
+
+  verifyPayout(stripeAccount: String): GetPayoutType
+
+  confirmPayout(currentAccountId: String): PayoutWholeType
+
+  writeUserReview(reservationId: Int!, listId: Int!, reviewContent: String!, rating: Float!, receiverId: String!): CommonType
+
+  confirmPayPalExecute(paymentId: String!, payerId: String!): ReservationPayment
+
+  submitForVerification(id: Int!, listApprovalStatus: String): EditListingResponse
+
+  deleteUser: UserCommon
+
+  changePassword(oldPassword: String, newPassword: String, confirmPassword: String): UserType
+
+  RemoveDocuments(id: Int, fileName: String): DocumentVerification
+
+  importCalendar(listId: Int, name: String, url: String, calendarId: Int): ListBlockedDatesResponseType
+}
+
+type Enquiry {
+  result: ThreadItems
+
+  status: Int
+
+  errorMessage: String
+}
+
+type ReservationPayment {
+  results: Reservation
+
+  status: Int
+
+  errorMessage: String
+
+  requireAdditionalAction: Boolean
+
+  paymentIntentSecret: String
+
+  reservationId: Int
+
+  redirectUrl: String
+}
+
+type SendMessage {
+  results: ThreadItems
+
+  status: Int
+
+  message: String
+
+  errorMessage: String
+
+  actionType: String
+
+  hostUnreadCount: Int
+}
+
+type ReportUserResult {
+  results: ReportUser
+
+  status: Int
+
+  errorMessage: String
+}
+
+type ReportUser {
+  id: Int
+
+  reporterId: String
+
+  userId: String
+
+  reportType: String
+
+  status: String
+
+  createdAt: String
+
+  firstName: String
+
+  reporterData: userProfile
+
+  userData: userProfile
+
+  userEmail: UserType
+
+  reporterEmail: UserType
+
+  userProfileId: userProfile
+}
+
+type SocialVerification {
+  verificationType: String
+
+  actionType: String
+
+  status: Int
+
+  errorMessage: String
+}
+
+type ListingResponse {
+  results: CreateListing
+
+  status: Int
+
+  errorMessage: String
+
+  actionType: String
+
+  id: Int
+}
+
+type CreateListing {
+  listId: Int
+
+  roomType: String
+
+  houseType: String
+
+  residenceType: String
+
+  bedrooms: String
+
+  buildingSize: String
+
+  bedType: String
+
+  beds: Int
+
+  personCapacity: Int
+
+  bathrooms: Float
+
+  bathroomType: String
+
+  country: String
+
+  street: String
+
+  buildingName: String
+
+  city: String
+
+  state: String
+
+  zipcode: String
+
+  status: String
+
+  lat: Float
+
+  lng: Float
+
+  errorMessage: String
+
+  actionType: String
+
+  amenities: [Int]
+
+  safetyAmenities: [Int]
+
+  spaces: [Int]
+
+  isMapTouched: Boolean
+
+  bedTypes: String
+}
+
+type EditListingResponse {
+  results: EditListing
+
+  status: Int
+
+  errorMessage: String
+
+  actionType: String
+
+  id: Int
+}
+
+type EditListing {
+  id: Int
+
+  title: String
+
+  description: String
+
+  roomType: String
+
+  houseType: String
+
+  residenceType: String
+
+  bedrooms: String
+
+  buildingSize: String
+
+  bedType: String
+
+  beds: Int
+
+  personCapacity: Int
+
+  bathrooms: Float
+
+  bathroomType: String
+
+  country: String
+
+  street: String
+
+  buildingName: String
+
+  city: String
+
+  state: String
+
+  zipcode: String
+
+  lat: Float
+
+  lng: Float
+
+  amenities: [Int]
+
+  safetyAmenities: [Int]
+
+  spaces: [Int]
+
+  houseRules: [Int]
+
+  bookingNoticeTime: String
+
+  checkInStart: String
+
+  checkInEnd: String
+
+  maxDaysNotice: String
+
+  minNight: Int
+
+  maxNight: Int
+
+  basePrice: Float
+
+  cleaningPrice: Float
+
+  tax: Float
+
+  currency: String
+
+  weeklyDiscount: Float
+
+  monthlyDiscount: Float
+
+  coverPhoto: Int
+
+  blockedDates: [String]
+
+  listApprovalStatus: String
+}
+
+type GetPayoutType {
+  results: [Payout]
+
+  status: Int
+
+  errorMessage: String
+
+  connectUrl: String
+
+  successUrl: String
+
+  failureUrl: String
+
+  stripeAccountId: String
+}
+
+type DocumentVerification {
+  id: Int
+
+  userId: ID!
+
+  fileName: String
+
+  fileType: String
+
+  photosCount: Int
+
+  documentStatus: String
+
+  status: String
+
+  errorMessage: String
+}
+
+"""
+A GraphQL Schema defines the capabilities of a GraphQL server. It exposes all available types and directives on the server, as well as the entry points for query, mutation, and subscription operations.
+"""
+type __Schema {
+  """
+  A list of all types supported by this server.
+  """
+  types: [__Type!]!
+
+  """
+  The type that query operations will be rooted at.
+  """
+  queryType: __Type!
+
+  """
+  If this server supports mutation, the type that mutation operations will be rooted at.
+  """
+  mutationType: __Type
+
+  """
+  If this server support subscription, the type that subscription operations will be rooted at.
+  """
+  subscriptionType: __Type
+
+  """
+  A list of all directives supported by this server.
+  """
+  directives: [__Directive!]!
+}
+
+"""
+The fundamental unit of any GraphQL Schema is the type. There are many kinds of types in GraphQL as represented by the `__TypeKind` enum.
+
+Depending on the kind of a type, certain fields describe information about that type. Scalar types provide no information beyond a name and description, while Enum types provide their values. Object and Interface types provide the fields they describe. Abstract types, Union and Interface, provide the Object types possible at runtime. List and NonNull types compose other types.
+"""
+type __Type {
+  kind: __TypeKind!
+
+  name: String
+
+  description: String
+
+  fields(includeDeprecated: Boolean = false): [__Field!]
+
+  interfaces: [__Type!]
+
+  possibleTypes: [__Type!]
+
+  enumValues(includeDeprecated: Boolean = false): [__EnumValue!]
+
+  inputFields: [__InputValue!]
+
+  ofType: __Type
+}
+
+"""
+An enum describing what kind of type a given `__Type` is.
+"""
+enum __TypeKind {
+  """
+  Indicates this type is a scalar.
+  """
+  SCALAR
+
+  """
+  Indicates this type is an object. `fields` and `interfaces` are valid fields.
+  """
+  OBJECT
+
+  """
+  Indicates this type is an interface. `fields` and `possibleTypes` are valid fields.
+  """
+  INTERFACE
+
+  """
+  Indicates this type is a union. `possibleTypes` is a valid field.
+  """
+  UNION
+
+  """
+  Indicates this type is an enum. `enumValues` is a valid field.
+  """
+  ENUM
+
+  """
+  Indicates this type is an input object. `inputFields` is a valid field.
+  """
+  INPUT_OBJECT
+
+  """
+  Indicates this type is a list. `ofType` is a valid field.
+  """
+  LIST
+
+  """
+  Indicates this type is a non-null. `ofType` is a valid field.
+  """
+  NON_NULL
+}
+
+"""
+Object and Interface types are described by a list of Fields, each of which has a name, potentially a list of arguments, and a return type.
+"""
+type __Field {
+  name: String!
+
+  description: String
+
+  args: [__InputValue!]!
+
+  type: __Type!
+
+  isDeprecated: Boolean!
+
+  deprecationReason: String
+}
+
+"""
+Arguments provided to Fields or Directives and the input fields of an InputObject are represented as Input Values which describe their type and optionally a default value.
+"""
+type __InputValue {
+  name: String!
+
+  description: String
+
+  type: __Type!
+
+  """
+  A GraphQL-formatted string representing the default value for this input value.
+  """
+  defaultValue: String
+}
+
+"""
+One possible value for a given Enum. Enum values are unique values, not a placeholder for a string or numeric value. However an Enum value is returned in a JSON response as a string.
+"""
+type __EnumValue {
+  name: String!
+
+  description: String
+
+  isDeprecated: Boolean!
+
+  deprecationReason: String
+}
+
+"""
+A Directive provides a way to describe alternate runtime execution and type validation behavior in a GraphQL document.
+
+In some cases, you need to provide options to alter GraphQL's execution behavior in ways field arguments will not suffice, such as conditionally including or skipping a field. Directives provide this by describing additional information to the executor.
+"""
+type __Directive {
+  name: String!
+
+  description: String
+
+  locations: [__DirectiveLocation!]!
+
+  args: [__InputValue!]!
+}
+
+"""
+A Directive can be adjacent to many parts of the GraphQL language, a __DirectiveLocation describes one such possible adjacencies.
+"""
+enum __DirectiveLocation {
+  """
+  Location adjacent to a query operation.
+  """
+  QUERY
+
+  """
+  Location adjacent to a mutation operation.
+  """
+  MUTATION
+
+  """
+  Location adjacent to a subscription operation.
+  """
+  SUBSCRIPTION
+
+  """
+  Location adjacent to a field.
+  """
+  FIELD
+
+  """
+  Location adjacent to a fragment definition.
+  """
+  FRAGMENT_DEFINITION
+
+  """
+  Location adjacent to a fragment spread.
+  """
+  FRAGMENT_SPREAD
+
+  """
+  Location adjacent to an inline fragment.
+  """
+  INLINE_FRAGMENT
+
+  """
+  Location adjacent to a variable definition.
+  """
+  VARIABLE_DEFINITION
+
+  """
+  Location adjacent to a schema definition.
+  """
+  SCHEMA
+
+  """
+  Location adjacent to a scalar definition.
+  """
+  SCALAR
+
+  """
+  Location adjacent to an object type definition.
+  """
+  OBJECT
+
+  """
+  Location adjacent to a field definition.
+  """
+  FIELD_DEFINITION
+
+  """
+  Location adjacent to an argument definition.
+  """
+  ARGUMENT_DEFINITION
+
+  """
+  Location adjacent to an interface definition.
+  """
+  INTERFACE
+
+  """
+  Location adjacent to a union definition.
+  """
+  UNION
+
+  """
+  Location adjacent to an enum definition.
+  """
+  ENUM
+
+  """
+  Location adjacent to an enum value definition.
+  """
+  ENUM_VALUE
+
+  """
+  Location adjacent to an input object type definition.
+  """
+  INPUT_OBJECT
+
+  """
+  Location adjacent to an input object field definition.
+  """
+  INPUT_FIELD_DEFINITION
+}
+
+"""
+Directs the executor to include this field or fragment only when the `if` argument is true.
+"""
+directive @include ("Included when true." if: Boolean!) on FIELD|FRAGMENT_SPREAD|INLINE_FRAGMENT
+
+"""
+Directs the executor to skip this field or fragment when the `if` argument is true.
+"""
+directive @skip ("Skipped when true." if: Boolean!) on FIELD|FRAGMENT_SPREAD|INLINE_FRAGMENT
+
+"""
+Marks an element of a GraphQL schema as no longer supported.
+"""
+directive @deprecated ("Explains why this element was deprecated, usually also including a suggestion for how to access supported similar data. Formatted using the Markdown syntax (as specified by [CommonMark](https://commonmark.org/)." reason: String = "No longer supported") on FIELD_DEFINITION|ENUM_VALUE
+
+schema {
+  query: Query
+  mutation: Mutation
+}

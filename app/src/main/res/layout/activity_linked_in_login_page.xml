@@ -9,17 +9,28 @@
 
     <Button
         android:id="@+id/gotoPayment"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="280dp"
+        android:layout_marginTop="292dp"
         android:backgroundTint="#720CD9"
-
         android:text="Go to Payment Screen"
         android:textColor="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/rentAllBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="29dp"
+        android:layout_marginTop="292dp"
+        android:text="Go to RentAll App"
+        android:backgroundTint="#E94E4E"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/gotoPayment"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView

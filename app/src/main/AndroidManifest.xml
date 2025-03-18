@@ -15,6 +15,7 @@
         android:maxSdkVersion="29" />
 
     <application
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -25,6 +26,9 @@
         android:theme="@style/Theme.PaymentGateway"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <activity
+            android:name=".RentAllMainAactivity"
+            android:exported="false" />
         <activity
             android:name=".CompressorImage"
             android:exported="false" />
@@ -64,23 +68,26 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:scheme="skype" />
             </intent-filter>
-
-            <intent-filter android:icon="@drawable/skype" android:priority="0">
+            <intent-filter
+                android:icon="@drawable/skype"
+                android:priority="0">
                 <action android:name="android.intent.action.CALL_PRIVILEGED" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:scheme="tel" />
             </intent-filter>
-
         </activity>
-
-        <activity android:name="com.soundcloud.android.crop.CropImageActivity"
-            android:theme="@style/Base.Theme.AppCompat"/>
+        <activity
+            android:name="com.soundcloud.android.crop.CropImageActivity"
+            android:theme="@style/Base.Theme.AppCompat" />
     </application>
 
 </manifest>
