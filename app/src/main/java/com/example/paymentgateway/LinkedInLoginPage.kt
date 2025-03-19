@@ -47,6 +47,12 @@ class LinkedInLoginPage : AppCompatActivity() {
 
         progressBar = findViewById(R.id.progressBar)
 
+
+        binding.crashTest.setOnClickListener {
+            throw RuntimeException("Test Crash")
+        }
+
+
         binding.btnLinkedInLogin.setOnClickListener {
             initializeWebView()
         }

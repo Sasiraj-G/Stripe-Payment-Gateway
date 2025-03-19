@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="16dp">
+
+    <ImageView
+        android:id="@+id/crashIcon"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/stripe_ic_error"
+        android:contentDescription="Error Icon"
+        android:layout_marginBottom="24dp" />
+
+    <TextView
+        android:id="@+id/crashMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Oops! Something went wrong. Please restart the app."
+        android:textSize="18sp"
+        android:textColor="@color/black"
+        android:gravity="center"
+        android:layout_marginBottom="24dp" />
+
+    <Button
+        android:id="@+id/restartButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Restart App"
+        android:backgroundTint="#9C27B0"
+        android:textColor="@color/white"
+        android:paddingHorizontal="24dp"
+        android:paddingVertical="12dp" />
+
+</LinearLayout>
