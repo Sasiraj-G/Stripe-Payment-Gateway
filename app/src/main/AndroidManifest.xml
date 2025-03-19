@@ -27,6 +27,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".ExploreViewDetails"
+            android:exported="false" />
+        <activity
             android:name=".CrashActivity"
             android:exported="false" />
         <activity

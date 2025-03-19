@@ -3,4 +3,11 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="linkedin_blue">#0077B5</color>
+    <color name="colorAccent">#FF5A5F</color>
+    <color name="colorBackground">#F7F7F7</color>
+    <color name="colorText">#484848</color>
+    <color name="colorTextLight">#767676</color>
+    <color name="colorButtonBackground">#FF5A5F</color>
+    <color name="transparent">#D5D5D3D3</color>
+    <color name="button_border_color"></color>
 </resources>

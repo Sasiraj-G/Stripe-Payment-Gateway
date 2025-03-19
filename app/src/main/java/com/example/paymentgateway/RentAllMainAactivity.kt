@@ -1,8 +1,11 @@
 package com.example.paymentgateway
 
 import android.os.Bundle
+import android.view.View
+import android.view.ViewGroup
 
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isGone
 
 import com.example.paymentgateway.databinding.ActivityRentAllMainActivityBinding
 
@@ -27,11 +30,14 @@ class RentAllMainAactivity : AppCompatActivity() {
                 R.id.inbox -> InboxPage()
                 R.id.profile -> ProfilePage()
                 else -> ExplorePage()
+
             }
             supportFragmentManager.beginTransaction().replace(R.id.fragment_containerView,selectedFragment).commit()
             true
 
+
         }
+
 
 
 

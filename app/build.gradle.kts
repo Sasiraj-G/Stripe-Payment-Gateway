@@ -115,9 +115,9 @@ dependencies {
 
     // //Epoxy
 
-    implementation("com.airbnb.android:epoxy:5.1.4")
-    kapt("com.airbnb.android:epoxy-processor:5.1.4")
-    implementation("com.airbnb.android:epoxy-databinding:5.1.4")
+    kapt ("com.airbnb.android:epoxy-processor:3.9.0")
+    implementation ("com.airbnb.android:epoxy:3.9.0")
+    implementation ("com.airbnb.android:epoxy-databinding:3.9.0")
 
 
     // Apollo GraphQL client

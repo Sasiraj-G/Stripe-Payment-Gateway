@@ -1,0 +1,125 @@
+query viewListingDetails(
+    $listId:Int!,
+    $preview: Boolean
+) {
+    viewListing (
+        listId:$listId,
+        preview: $preview
+    ) {
+        results {
+            id
+            userId
+            title
+            description
+            coverPhoto
+            city
+            state
+            country
+            isPublished
+            lat
+            lng
+            houseType
+            roomType
+            bookingType
+            bedrooms
+            checkInBlockedDates{
+                listId
+                blockedDates
+                calendarStatus
+                isSpecialPrice
+                dayStatus
+            }
+            fullBlockedDates{
+                listId
+                blockedDates
+                calendarStatus
+                isSpecialPrice
+                dayStatus
+            }
+            userBedsTypes{
+                bedCount
+                bedName
+            }
+            residenceType
+            beds
+            personCapacity
+            bathrooms
+            coverPhoto
+            listPhotoName
+            settingsData{
+                listsettings{
+                    id
+                    itemName
+                    settingsType{
+                        typeName
+                    }
+                }
+            }
+            listPhotos{
+                id
+                name
+            }
+            user {
+                email
+                profile{
+                    profileId
+                    displayName
+                    firstName
+                    picture
+                }
+            }
+            userAmenities {
+                id
+                itemName
+                image
+            }
+            userSafetyAmenities {
+                id
+                itemName
+                image
+            }
+            userSpaces {
+                id
+                itemName
+                image
+            }
+            houseRules {
+                id
+                itemName
+            }
+            listingData {
+                bookingNoticeTime,
+                checkInStart,
+                checkInEnd,
+                maxDaysNotice,
+                minNight,
+                maxNight,
+                basePrice,
+                cleaningPrice,
+                currency,
+                weeklyDiscount,
+                monthlyDiscount,
+                cancellation{
+                    id
+                    policyName
+                    policyContent
+                }
+            }
+            blockedDates{
+                blockedDates,
+                reservationId,
+                calendarStatus,
+                isSpecialPrice,
+                listId
+                dayStatus
+            }
+            reviewsCount,
+            reviewsStarRating
+            isListOwner
+            wishListStatus
+            wishListGroupCount
+        }
+        status
+        errorMessage
+    }
+}
