@@ -1,7 +1,9 @@
 package com.example.paymentgateway.graphqlimp
 
+
+import android.content.Intent
+import android.net.Uri
 import android.view.View
-import android.widget.TextView
 import androidx.databinding.ViewDataBinding
 import coil.load
 import coil.transform.RoundedCornersTransformation
@@ -12,31 +14,69 @@ import com.airbnb.epoxy.EpoxyModelClass
 import com.airbnb.epoxy.EpoxyModelWithHolder
 import com.example.paymentgateway.R
 import com.example.paymentgateway.databinding.ItemReservationBinding
+import kotlin.coroutines.coroutineContext
 
 @EpoxyModelClass
 abstract class TripEpoxyItem : DataBindingEpoxyModel() {
     @EpoxyAttribute
     lateinit var trip: Trip
 
-    @EpoxyAttribute
-    lateinit var onHostDetailsClick: (Trip) -> Unit
+//    @EpoxyAttribute
+//    lateinit var onHostEmailClick: (Trip) -> Unit
+//
+//    @EpoxyAttribute
+//    lateinit var onHostPhoneClick: (Trip) -> Unit
+
+
 
     override fun setDataBindingVariables(binding: ViewDataBinding) {
+
         if (binding is ItemReservationBinding) {
             binding.trip = trip
-            binding.approveBtn.setOnClickListener {
-                onHostDetailsClick(trip)
+            binding.phoneNumber.setOnClickListener {
+                val intent = Intent(Intent.ACTION_DIAL).apply {
+                    data = Uri.parse("tel:${trip.phone}")
+                }
+                binding.root.context.startActivity(intent)
+            }
+            binding.gmailAddress.setOnClickListener {
+                val intent = Intent(Intent.ACTION_SENDTO).apply {
+                    data = Uri.parse("mailto:${trip.email}")
+                }
+                binding.root.context.startActivity(intent)
+
             }
 
             // Load image using Coil
+
             binding.profileImage.load(trip.imageUrl) {
                 crossfade(true)
-                transformations(RoundedCornersTransformation(8f))
+                transformations(RoundedCornersTransformation())
+            }
+            if(trip.title.contains("null")){
+                binding.title.visibility= View.GONE
+            }else{
+                binding.title.visibility=View.VISIBLE
+            }
+            if(trip.location.contains("null")){
+                binding.location.visibility= View.GONE
+            }else{
+                binding.location.visibility=View.VISIBLE
             }
 
+            if(trip.phone.contains("null")){
+                binding.phoneNumber.visibility= View.GONE
+                binding.phoneIcon.visibility=View.GONE
+            }else{
+                binding.phoneNumber.visibility=View.VISIBLE
+                binding.phoneIcon.visibility=View.VISIBLE
+            }
             binding.executePendingBindings()
         }
+
     }
+
+
     override fun getDefaultLayout(): Int {
         return R.layout.item_reservation
     }

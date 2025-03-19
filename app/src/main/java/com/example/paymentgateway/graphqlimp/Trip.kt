@@ -8,5 +8,6 @@ data class Trip(
     val price: String,
     val phone: String,
     val email: String,
+    val reservationState: String,
     val imageUrl: String
 )

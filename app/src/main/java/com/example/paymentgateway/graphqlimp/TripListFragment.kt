@@ -1,5 +1,7 @@
 package com.example.paymentgateway.graphqlimp
 
+import android.content.Intent
+import android.net.Uri
 import com.example.paymentgateway.TripsPage
 import android.os.Build
 import android.os.Bundle
@@ -9,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
+
 import androidx.lifecycle.lifecycleScope
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.Optional
@@ -19,10 +22,9 @@ import com.apollographql.apollo3.exception.ApolloException
 import com.example.paymentgateway.GetAllReservationQuery
 
 import com.example.paymentgateway.databinding.FragmentTripListBinding
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.example.paymentgateway.databinding.ItemReservationBinding
 import kotlinx.coroutines.launch
 import java.time.Instant
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -31,6 +33,8 @@ import java.util.Locale
 
 class TripListFragment : Fragment() {
     private var _binding: FragmentTripListBinding? = null
+
+    private lateinit var reservationBinding: ItemReservationBinding
     private val binding get() = _binding!!
     private lateinit var apolloClient: ApolloClient
     private lateinit var epoxyController: TripEpoxyController
@@ -79,11 +83,18 @@ class TripListFragment : Fragment() {
             binding.errorView.visibility = View.GONE
             fetchTrips()
         }
+
+
+
+
+
     }
+
+
 
     private fun setupEpoxyRecyclerView() {
         epoxyController = TripEpoxyController { trip ->
-            showHostDetails(trip)
+            redirectEmail(trip)
         }
 
         binding.recyclerView.apply {
@@ -181,7 +192,8 @@ class TripListFragment : Fragment() {
                             price = "${reservation?.currency} ${reservation?.total}",
                             phone = reservation?.hostData?.phoneNumber.toString(),
                             email = reservation?.hostUser?.email.toString(),
-                            imageUrl = reservation?.hostData?.picture.toString()
+                            reservationState = reservation?.reservationState.toString(),
+                            imageUrl = "https://staging1.flutterapps.io/images/avatar/"+reservation?.hostData?.picture
 
                         )
                     }
@@ -192,10 +204,15 @@ class TripListFragment : Fragment() {
                         epoxyController.addData(trips)
                     }
 
+
                     isLastPage = trips.size < 10
+
+
+
 
                     // Show empty state if necessary
                     showEmptyState(trips.isEmpty())
+
                 } else {
                     isLastPage = true
 
@@ -222,18 +239,19 @@ class TripListFragment : Fragment() {
         }
     }
 
-    private fun showHostDetails(trip: Trip) {
-        val message = """
-            Host Phone: ${trip.phone}
-            Host Email: ${trip.email}
-        """.trimIndent()
 
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Host Details")
-            .setMessage(message)
-            .setPositiveButton("OK", null)
-            .show()
+
+
+    private fun redirectEmail(trip: Trip){
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(trip.email))
+        intent.type = "message/rfc822"
+        requireContext().startActivity(intent)
     }
+
+
+
+
 
     private fun showEmptyState(show: Boolean) {
         binding.emptyStateView.visibility = if (show) View.VISIBLE else View.GONE
@@ -244,6 +262,8 @@ class TripListFragment : Fragment() {
         binding.errorView.visibility = View.VISIBLE
         binding.errorTextView.text = message
     }
+
+
 
     override fun onDestroyView() {
         super.onDestroyView()
