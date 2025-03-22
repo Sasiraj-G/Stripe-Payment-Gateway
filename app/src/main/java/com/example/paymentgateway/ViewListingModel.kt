@@ -20,8 +20,14 @@ val bedrooms : String,
 val profileImage : String,
 val address : String,
 val displayName : String,
-val userAmenties: String
+val userAmenties : List<userAmenties>,
 
 )
+
+data class userAmenties(
+    val itemName:String,
+    val itemIcon:String,
+)
+
 
 

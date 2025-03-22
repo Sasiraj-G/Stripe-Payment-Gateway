@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <layout  xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
@@ -10,6 +9,7 @@
             type="com.example.paymentgateway.ViewListingModel" />
 
     </data>
+
     <androidx.coordinatorlayout.widget.CoordinatorLayout
 
         android:layout_width="match_parent"
@@ -17,8 +17,7 @@
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            android:layout_height="match_parent">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -26,11 +25,12 @@
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="300dp">
+                    android:layout_height="240dp">
                     <ImageView
                         android:id="@+id/viewPagerImages"
                         android:layout_width="match_parent"
                         app:imageUrl="@{exploreDetails.imageUrl}"
+                        android:scaleType="centerCrop"
                         android:layout_height="match_parent" />
                 </RelativeLayout>
                 <!-- Accommodation info -->
@@ -38,7 +38,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:paddingHorizontal="16dp"
+                    android:paddingHorizontal="24dp"
                     android:paddingTop="16dp">
                     <TextView
                         android:id="@+id/tvTitle"
@@ -105,11 +105,6 @@
                                 android:textSize="16sp" />
                         </LinearLayout>
                     </LinearLayout>
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginTop="16dp"
-                        android:background="#EEEEEE" />
                     <!-- Property details -->
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -429,7 +424,7 @@
                             android:layout_marginStart="16dp"
                             android:textColor="#707070"
                             android:textSize="16sp"
-                            android:text="SmartPhone" />
+                            android:text="Smart Phone" />
                     </LinearLayout>
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -471,13 +466,13 @@
                             android:text="Free parking on premises" />
                     </LinearLayout>
 
-                    <Button
+                    <androidx.appcompat.widget.AppCompatButton
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Show all amenities"
                         android:layout_marginTop="12dp"
-
-                        />
+                        android:background="@drawable/outline_button"
+                        android:textColor="@color/green"
+                        android:text="Show all amenities" />
 
                     <View
                         android:layout_width="match_parent"
@@ -658,6 +653,7 @@
                             android:id="@+id/ivMap"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
+                            android:src="@drawable/maps"
                             android:contentDescription="Location map"
                             android:scaleType="centerCrop"
                             />
@@ -697,11 +693,13 @@
                     </LinearLayout>
 
 
-                    <Button
+                    <androidx.appcompat.widget.AppCompatButton
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Read all 2 Reviews"
+                        android:textColor="@color/green"
                         android:layout_marginTop="12dp"
+                        android:background="@drawable/outline_button"
                         android:id="@+id/btnReview"/>
                     <!-- Reviews list would go here using RecyclerView -->
                     <LinearLayout
@@ -734,7 +732,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Read"
-                            android:textColor="#0A8ED9"
+                            android:textColor="@color/green"
                             android:textSize="16sp" />
                     </LinearLayout>
                     <View
@@ -760,7 +758,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Strict"
-                            android:textColor="#0A8ED9"
+                            android:textColor="@color/green"
                             android:textSize="16sp" />
                     </LinearLayout>
                     <View
@@ -786,7 +784,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Check"
-                            android:textColor="#0A8ED9"
+                            android:textColor="@color/green"
                             android:textSize="16sp" />
                     </LinearLayout>
                     <View
@@ -812,7 +810,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Message"
-                            android:textColor="#0A8ED9"
+                            android:textColor="@color/green"
                             android:textSize="16sp" />
                     </LinearLayout>
                     <!-- Similar listings -->
@@ -824,14 +822,13 @@
                         android:textColor="@android:color/black"
                         android:textSize="20sp"
                         android:textStyle="bold" />
-                    <com.airbnb.epoxy.EpoxyRecyclerView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/epoxyRecylcerviewSimilar"/>
-                    <!-- Extra space for bottom sheets -->
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="80dp" />
+<!--                    <com.airbnb.epoxy.EpoxyRecyclerView-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:id="@+id/epoxyRecylcerviewSimilar"/>-->
+<!--                     Extra space for bottom sheets -->
+
+
                 </LinearLayout>
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>

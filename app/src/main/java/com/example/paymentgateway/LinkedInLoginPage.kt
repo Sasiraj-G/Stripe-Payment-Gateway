@@ -48,18 +48,13 @@ class LinkedInLoginPage : AppCompatActivity() {
         progressBar = findViewById(R.id.progressBar)
 
 
-        binding.crashTest.setOnClickListener {
-            throw RuntimeException("Test Crash")
-        }
+
 
 
         binding.btnLinkedInLogin.setOnClickListener {
             initializeWebView()
         }
-        binding.gotoPayment.setOnClickListener{
-            val intent = Intent(this,MainActivity::class.java)
-            startActivity(intent)
-        }
+
 
         binding.skype.setOnClickListener {
 

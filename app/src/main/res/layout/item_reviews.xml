@@ -6,8 +6,8 @@
 
     <data>
         <variable
-            name="trip"
-            type="com.example.paymentgateway.TripsModelData" />
+            name="review"
+            type="com.example.paymentgateway.ViewListingModel" />
 
     </data>
 

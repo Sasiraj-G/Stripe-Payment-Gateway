@@ -9,5 +9,6 @@
     <color name="colorTextLight">#767676</color>
     <color name="colorButtonBackground">#FF5A5F</color>
     <color name="transparent">#D5D5D3D3</color>
-    <color name="button_border_color"></color>
+    <color name="button_border_color">#2D8931</color>
+    <color name="green">#2D8931</color>
 </resources>
