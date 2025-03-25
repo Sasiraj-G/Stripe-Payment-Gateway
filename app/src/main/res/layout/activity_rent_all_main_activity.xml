@@ -17,8 +17,8 @@
         android:id="@+id/bottomAppBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:fabCradleMargin="10dp"
-        app:fabCradleVerticalOffset="10dp"
+        app:fabCradleMargin="6dp"
+        app:fabCradleVerticalOffset="5dp"
         app:fabCradleRoundedCornerRadius="6dp"
         app:fabAlignmentMode="center"
         app:fabAnchorMode="cradle"
@@ -39,7 +39,9 @@
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/plus"
+        android:backgroundTint="#EB473B"
+        android:src="@drawable/plus_icon"
+        app:shapeAppearanceOverlay="@style/FabShapeStyle"
         app:layout_anchor="@id/bottomAppBar" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

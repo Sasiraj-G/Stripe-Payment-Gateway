@@ -274,7 +274,7 @@ class ExploreViewDetails : AppCompatActivity() {
         val currentItems = wishlistController.getCurrentItems().toMutableList()
 
         Log.d("checkwishlist","before "+wishlistItems.toString())
-        wishlistItems.add(WishlistItem("wwe", 1, false))
+        wishlistItems.add(WishlistItem("wwe", 0, true))
 
 
 

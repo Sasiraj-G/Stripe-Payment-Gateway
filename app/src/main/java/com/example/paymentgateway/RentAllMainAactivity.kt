@@ -38,6 +38,10 @@ class RentAllMainAactivity : AppCompatActivity() {
 
         }
 
+        binding.fab.setOnClickListener {
+            supportFragmentManager.beginTransaction().replace(R.id.fragment_containerView,TripsPage()).commit()
+        }
+
 
 
 
