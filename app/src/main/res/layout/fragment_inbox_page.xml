@@ -13,6 +13,18 @@
         android:text="Image Picker"
         android:textSize="18sp"
         android:id="@+id/imagePicker"
+        android:backgroundTint="@color/colorButtonBackground"
+        android:layout_gravity="center"
+        android:gravity="center" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Location Search"
+        android:textSize="18sp"
+        android:backgroundTint="@color/colorAccent"
+        android:layout_marginTop="12dp"
+        android:id="@+id/locationSearch"
         android:layout_gravity="center"
         android:gravity="center" />
 

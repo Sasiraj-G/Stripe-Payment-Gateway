@@ -130,6 +130,10 @@ dependencies {
     kapt("com.google.dagger:hilt-compiler:2.51.1")
 
 
+    //google new place api
+    implementation("com.google.android.libraries.places:places:3.5.0")
+
+
 
 
 

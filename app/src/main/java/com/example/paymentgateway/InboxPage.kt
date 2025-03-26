@@ -31,6 +31,10 @@ class InboxPage : Fragment() {
             startActivity(intent)
 
         }
+        binding.locationSearch.setOnClickListener {
+            val intent = Intent(requireContext(), LocationSearch::class.java)
+            startActivity(intent)
+        }
 
 
     }

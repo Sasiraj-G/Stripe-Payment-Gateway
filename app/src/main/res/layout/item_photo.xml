@@ -5,9 +5,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <RelativeLayout
-        android:layout_width="130dp"
+        android:layout_width="140dp"
         android:layout_height="100dp"
-        android:layout_margin="8dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
         android:elevation="2dp">
         <androidx.cardview.widget.CardView
             android:id="@+id/card_image_container"
