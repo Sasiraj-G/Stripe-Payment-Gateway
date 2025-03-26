@@ -1,0 +1,11 @@
+mutation RemoveListPhotos(
+    $listId: Int!,
+    $name: String,
+) {
+    removeListPhotos :  RemoveListPhotos (
+        listId: $listId,
+        name: $name) {
+        status
+        errorMessage
+    }
+}

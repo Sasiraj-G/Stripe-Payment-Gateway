@@ -1,0 +1,25 @@
+query Step2ListDetails($listId:String!, $listIdInt:Int! $preview: Boolean) {
+    getListingDetails (listId:$listId, preview: $preview) {
+        results{
+            id
+            userId
+            title
+            description
+            coverPhoto
+        }
+        status
+        errorMessage
+    }
+    showListPhotos(listId: $listIdInt) {
+        results{
+            id,
+            listId,
+            name,
+            type,
+            isCover,
+            photosCount,
+        }
+        status
+        errorMessage
+    }
+}

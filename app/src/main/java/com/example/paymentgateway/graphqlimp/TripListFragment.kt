@@ -141,8 +141,6 @@ class TripListFragment : Fragment() {
                 )
 
 
-
-
                 val tes = apolloClient.query(GetAllReservationQuery()).execute().data
                 Log.d("response2", "Response ${tes}")
 
