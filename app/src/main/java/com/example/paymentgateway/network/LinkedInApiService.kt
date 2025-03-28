@@ -8,11 +8,11 @@ import retrofit2.http.Header
 interface LinkedInApiService {
     @GET("v2/me")
     suspend fun getProfile(
-        @Header("Authorization") authorization: String
+        @Header("auth") authorization: String
     ): LinkedInProfileResponse
 
     @GET("v2/emailAddress?q=members&projection=(elements*(handle~))")
     suspend fun getEmail(
-        @Header("Authorization") authorization: String
+        @Header("auth") authorization: String
     ): LinkedInEmailResponse
 }

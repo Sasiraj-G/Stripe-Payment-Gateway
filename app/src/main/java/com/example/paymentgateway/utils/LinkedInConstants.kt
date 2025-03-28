@@ -4,8 +4,8 @@ package com.example.paymentgateway.utils
 object LinkedInConstants {
     const val CLIENT_ID = "86uxtto9rfz1t2"
     const val CLIENT_SECRET = "WPL_AP1.hrUOizjX6xVYVmJr.ajJ7kw=="
-//    const val REDIRECT_URI = "https://www.linkedin.com/developers/tools/oauth/redirect" // e.g., "https://yourapp.com/callback"
-    const val REDIRECT_URI = "https://com.example.paymentgateway/auth/linkedin/callback"
+    const val REDIRECT_URI = "https://www.linkedin.com/developers/tools/oauth/redirect" // e.g., "https://yourapp.com/callback"
+//    const val REDIRECT_URI = "https://github.com/Sasiraj-G/Stripe-Payment-Gateway"
     const val SCOPE = "r_liteprofile r_emailaddress"
 
     const val AUTHORIZATION_URL = "https://www.linkedin.com/oauth/v2/authorization"

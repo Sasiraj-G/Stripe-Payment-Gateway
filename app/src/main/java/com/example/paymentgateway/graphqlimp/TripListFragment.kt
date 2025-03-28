@@ -207,17 +207,13 @@ class TripListFragment : Fragment() {
 
                     isLastPage = trips.size < 10
 
-
-
-
-                    // Show empty state if necessary
                     showEmptyState(trips.isEmpty())
 
                 } else {
                     isLastPage = true
 
                     if (currentPage == 1) {
-                        // Show empty state if first page has no results
+
                         showEmptyState(true)
                     }
                 }

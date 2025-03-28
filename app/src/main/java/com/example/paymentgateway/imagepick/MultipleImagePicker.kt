@@ -1,19 +1,46 @@
 package com.example.paymentgateway.imagepick
 
+
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
+
 import android.app.Activity
 import android.content.Intent
+
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.HapticFeedbackConstants
+import android.view.View
+
+import android.view.animation.AccelerateDecelerateInterpolator
+
+
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.net.toUri
+
+import androidx.core.animation.doOnEnd
+import androidx.core.view.doOnPreDraw
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_DRAG
+import androidx.recyclerview.widget.ItemTouchHelper.DOWN
+
+import androidx.recyclerview.widget.ItemTouchHelper.UP
+import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.epoxy.EpoxyController
+import com.airbnb.epoxy.EpoxyRecyclerView
+import com.airbnb.epoxy.EpoxyTouchHelper
+import com.airbnb.epoxy.preload.addEpoxyPreloader
+
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.Optional
 import com.apollographql.apollo3.network.okHttpClient
 import com.example.paymentgateway.Constants
+import com.example.paymentgateway.R
 import com.example.paymentgateway.RemoveListPhotosMutation
 import com.example.paymentgateway.Step2ListDetailsQuery
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -21,8 +48,6 @@ import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import com.example.paymentgateway.databinding.ActivityMultipleImagePickerBinding
-import com.example.paymentgateway.uploadServer
-
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -33,17 +58,16 @@ import okhttp3.logging.HttpLoggingInterceptor
 
 import java.io.File
 import java.io.IOException
+import java.util.Collections
+import kotlin.math.abs
 
 
 class MultipleImagePicker : AppCompatActivity() {
     private lateinit var binding: ActivityMultipleImagePickerBinding
     private lateinit var apolloClient: ApolloClient
-
-
     private val selectedImages = mutableListOf<Uri>()
     private val uploadedImages = mutableListOf<String>()
-
-
+    private var isLoading = false
 
     private val okHttpClient by lazy {
         OkHttpClient.Builder().build()
@@ -94,6 +118,10 @@ class MultipleImagePicker : AppCompatActivity() {
 
     private fun fetchExistingPhotos() {
         Log.d("TEST","fff")
+        if (isLoading) return
+
+        isLoading = true
+        binding.progressBar.visibility = View.VISIBLE
 
             lifecycleScope.launch {
                 try {
@@ -104,19 +132,20 @@ class MultipleImagePicker : AppCompatActivity() {
                         Log.d("TEST", "Existing image URLs: $existingImageUrls")
                         uploadedImages.addAll(existingImageUrls)
                         setupRecyclerView()
+//                        epoxyController.requestModelBuild()
                     }
                 } catch (e: Exception) {
                     Toast.makeText(this@MultipleImagePicker,
                         "Error fetching existing photos",
                         Toast.LENGTH_SHORT).show()
                     Log.d("TEST", "Error fetching existing photos: ${e.message}")
+                }finally {
+                    isLoading = false
+                    binding.progressBar.visibility = View.GONE
                 }
             }
 
     }
-
-
-
 
     private fun handleImageSelection(data: Intent?){
         val newImages = mutableListOf<Uri>()
@@ -141,6 +170,8 @@ class MultipleImagePicker : AppCompatActivity() {
         selectedImages.addAll(newImages)
         selectedImages.addAll(singleImage)
         setupRecyclerView()
+        // Rebuild models
+//        epoxyController.requestModelBuild()
 
     }
 
@@ -149,7 +180,7 @@ class MultipleImagePicker : AppCompatActivity() {
         binding.nextButton.setOnClickListener {
             if (selectedImages.isNotEmpty()) {
               uploadImagesToServer()
-           //     uploadSelectedImages()
+
             } else {
                 Toast.makeText(this, "Please select at least one image", Toast.LENGTH_SHORT).show()
             }
@@ -214,7 +245,7 @@ class MultipleImagePicker : AppCompatActivity() {
             .addHeader("Content-Type", "multipart/form-data")
             .build()
 
-        // Execute the request
+
             val response = okHttpClient.newCall(request).execute()
 
             // Log full response details
@@ -245,7 +276,7 @@ class MultipleImagePicker : AppCompatActivity() {
 
     private fun createTempFileFromUri(uri: Uri): File {
         val inputStream = contentResolver.openInputStream(uri)
-        //val tempFile = File.createTempFile("image", ".jpg", cacheDir)
+
         val tempFile = File(cacheDir, "temp_upload_image_${System.currentTimeMillis()}.jpg")
         tempFile.deleteOnExit()
 
@@ -273,6 +304,7 @@ class MultipleImagePicker : AppCompatActivity() {
                 if (mutationResult?.status == 200) {
                     uploadedImages.remove(imageUrl)
                     setupRecyclerView()
+//                    epoxyController.requestModelBuild()
                     Toast.makeText(this@MultipleImagePicker, "Image deleted successfully", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(this@MultipleImagePicker, mutationResult?.errorMessage ?: "Failed to delete image", Toast.LENGTH_SHORT).show()
@@ -287,41 +319,457 @@ class MultipleImagePicker : AppCompatActivity() {
 
 
     private fun setupRecyclerView() {
-        binding.imageRecyclerView.withModels {
+
+        val gridLayoutManager = GridLayoutManager(this, 2)
+        binding.imageRecyclerView.layoutManager = gridLayoutManager
+
+        (binding.imageRecyclerView as? EpoxyRecyclerView)?.let { recyclerView ->
+            recyclerView.withModels {
 
                 imagePlaceholder {
                     id("placeholder")
                     onPlaceholderClick { _ -> openImagePicker() }
                 }
-            selectedImages.forEachIndexed { index, imageUri ->
-                imagePicker {
-                    id(index)
-                    imageUri(imageUri)
+                selectedImages.forEachIndexed { index, imageUri ->
+                    imagePicker {
+                        id(index)
+                        imageUri(imageUri)
 
-                    onDeleteClick { _ ->
-                        selectedImages.removeAt(index)
-                        setupRecyclerView()
+
+                        onClick {
+                            val intent = Intent(this@MultipleImagePicker, ImageViewer::class.java)
+                            val imageUriStrings = uploadedImages.map { it.toString() }
+                            intent.putStringArrayListExtra(
+                                ImageViewer.EXTRA_IMAGE_URIS,
+                                ArrayList(imageUriStrings)
+                            )
+                            intent.putExtra(ImageViewer.EXTRA_INITIAL_POSITION, index)
+
+                            startActivity(intent)
+
+                        }
+                        onDeleteClick { _ ->
+                            selectedImages.removeAt(index)
+                            setupRecyclerView()
+                        }
+
+                    }
+                }
+                uploadedImages.forEachIndexed { index, imageUrl ->
+                    uploadImagePicker {
+                        id("upload" + index)
+                        imageUrl("https://staging1.flutterapps.io/images/upload/" + imageUrl)
+                        onImageClick {
+                            val intent = Intent(this@MultipleImagePicker, ImageViewer::class.java)
+                            val imageUriStrings = uploadedImages.map { it.toString() }
+                            intent.putStringArrayListExtra(
+                                ImageViewer.EXTRA_IMAGE_URIS,
+                                ArrayList(imageUriStrings)
+                            )
+                            intent.putExtra(ImageViewer.EXTRA_INITIAL_POSITION, index)
+
+                            startActivity(intent)
+                        }
+                        onDeleteClick { _ ->
+                            uploadedImages.removeAt(index)
+                            deleteImage(imageUrl)
+                            setupRecyclerView()
+                        }
+
+                    }
+
+                }
+              //  setupDragAndDrop(recyclerView)
+
+//            enableFlexibleDragDrop(
+//                recyclerView = binding.imageRecyclerView,
+//                selectedImages = uploadedImages,
+//                onDragComplete = { fromPosition, toPosition ->
+
+//                    Log.d("DragDrop", "Moved from $fromPosition to $toPosition")
+//                    setupRecyclerView()
+//                }
+//            )
+
+//            enableDragDrop(
+//                recyclerView = binding.imageRecyclerView,
+//                selectedImages = uploadedImages,
+//                onDragComplete = { fromPosition, toPosition ->
+//                    Log.d("DragDrop", "Moved from $fromPosition to $toPosition")
+//
+//                    setupRecyclerView()
+//                }
+//            )
+                setupDragAndDrop(recyclerView)
+
+                // Setup drag and drop with EpoxyTouchHelper
+
+
+                // Smooth scroll transformation
+//            binding.imageRecyclerView.doOnPreDraw {
+//                binding.imageRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+//                    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+//                        transformScrollItems(recyclerView)
+//                    }
+//                })
+//            }
+            }
+        }
+
+
+
+    }
+
+    fun EpoxyController.enableDragDrop(
+        recyclerView: RecyclerView,
+        selectedImages: MutableList<String>,
+        onDragComplete: ((fromPosition: Int, toPosition: Int) -> Unit)? = null
+    ) {
+        val dragDropCallback = object : ItemTouchHelper.Callback() {
+            private var draggedItem: RecyclerView.ViewHolder? = null
+
+            override fun getMovementFlags(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder
+            ): Int {
+                // Only allow dragging for image picker models
+                return if (viewHolder.itemView.tag == "draggable") {
+                    val dragFlags = UP or
+                            DOWN or
+                            ItemTouchHelper.LEFT or
+                            ItemTouchHelper.RIGHT
+                    makeMovementFlags(dragFlags, 0)
+                } else {
+                    makeMovementFlags(0, 0)
+                }
+            }
+
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                if (viewHolder.itemView.tag != "draggable" ||
+                    target.itemView.tag != "draggable") {
+                    return false
+                }
+
+                val fromPosition = viewHolder.bindingAdapterPosition
+                val toPosition = target.bindingAdapterPosition
+
+                if (fromPosition < 0 || fromPosition >= selectedImages.size ||
+                    toPosition < 0 || toPosition >= selectedImages.size) {
+                    return false
+                }
+                try {
+                    Collections.swap(selectedImages, fromPosition, toPosition)
+                    requestModelBuild()
+
+                } catch (e: IndexOutOfBoundsException) {
+                    return false
+                }
+              //  recyclerView.adapter?.notifyItemMoved(fromPosition, toPosition)
+                requestModelBuild()
+                onDragComplete?.invoke(fromPosition, toPosition)
+                return true
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                // No swiping implementation
+            }
+
+            override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
+                super.onSelectedChanged(viewHolder, actionState)
+                viewHolder?.let { holder ->
+                    when (actionState) {
+                        ItemTouchHelper.ACTION_STATE_DRAG -> {
+
+                            holder.itemView.animate()
+                                .scaleX(0.9f)
+                                .scaleY(0.9f)
+                                .translationZ(16f)
+                                .setDuration(200)
+                                .setInterpolator(AccelerateDecelerateInterpolator())
+                                .start()
+                        }
+                        ItemTouchHelper.ACTION_STATE_IDLE -> {
+                            // Reset view after drag
+                            holder.itemView.animate()
+                                .scaleX(1f)
+                                .scaleY(1f)
+                                .translationZ(0f)
+                                .setDuration(200)
+                                .setInterpolator(AccelerateDecelerateInterpolator())
+                                .start()
+                        }
                     }
                 }
             }
-            uploadedImages.forEachIndexed { index, imageUrl ->
-                uploadImagePicker {
-                    id("upload"+index)
-                    imageUrl("https://staging1.flutterapps.io/images/upload/"+imageUrl)
-                    onDeleteClick { _ ->
-                        uploadedImages.removeAt(index)
-                        deleteImage(imageUrl)
-                        setupRecyclerView()
+
+            override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
+                super.clearView(recyclerView, viewHolder)
+
+                // Restore original state with animation
+                val scaleXAnimator = ObjectAnimator.ofFloat(viewHolder.itemView, "scaleX", 1.1f, 1f)
+                val scaleYAnimator = ObjectAnimator.ofFloat(viewHolder.itemView, "scaleY", 1.1f, 1f)
+                val elevationAnimator = ObjectAnimator.ofFloat(viewHolder.itemView, "elevation", 16f, 0f)
+
+                val animatorSet = AnimatorSet().apply {
+                    playTogether(scaleXAnimator, scaleYAnimator, elevationAnimator)
+                    duration = 200
+                    interpolator = AccelerateDecelerateInterpolator()
+                    doOnEnd {
+                        // Ensure we reset the view completely
+                        viewHolder.itemView.scaleX = 1f
+                        viewHolder.itemView.scaleY = 1f
+                        viewHolder.itemView.elevation = 0f
                     }
                 }
+                animatorSet.start()
+            }
+            override fun onMoved(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                fromPos: Int,
+                target: RecyclerView.ViewHolder,
+                toPos: Int,
+                x: Int,
+                y: Int
+            ) {
+                super.onMoved(recyclerView, viewHolder, fromPos, target, toPos, x, y)
+                viewHolder.itemView.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+            }
+        }
+
+        val touchHelper = ItemTouchHelper(dragDropCallback)
+        touchHelper.attachToRecyclerView(recyclerView)
+    }
+
+    fun EpoxyController.enableFlexibleDragDrop(
+        recyclerView: RecyclerView,
+        selectedImages: MutableList<String>,
+        onDragComplete: ((fromPosition: Int, toPosition: Int) -> Unit)? = null
+    ) {
+        val dragDropCallback = object : ItemTouchHelper.Callback() {
+            // Track the original position to ensure correct repositioning
+            private var draggedItemOriginalPosition: Int = RecyclerView.NO_POSITION
+            private var targetPosition: Int = RecyclerView.NO_POSITION
+
+            override fun getMovementFlags(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder
+            ): Int {
+                return if (viewHolder.itemView.tag == "draggable") {
+                    val dragFlags = UP or
+                            DOWN or
+                            ItemTouchHelper.LEFT or
+                            ItemTouchHelper.RIGHT
+                    makeMovementFlags(dragFlags, 0)
+                } else {
+                    makeMovementFlags(0, 0)
+                }
+            }
+
+            override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
+                super.onSelectedChanged(viewHolder, actionState)
+
+                viewHolder?.let {
+                    if (actionState == ACTION_STATE_DRAG) {
+
+                        draggedItemOriginalPosition = it.adapterPosition
+
+                        // Apply scaling and elevation animation
+                        val scaleXAnimator = ObjectAnimator.ofFloat(it.itemView, "scaleX", 1f, 1.1f)
+                        val scaleYAnimator = ObjectAnimator.ofFloat(it.itemView, "scaleY", 1f, 1.1f)
+                        val elevationAnimator = ObjectAnimator.ofFloat(it.itemView, "elevation", 0f, 16f)
+
+                        val animatorSet = AnimatorSet().apply {
+                            playTogether(scaleXAnimator, scaleYAnimator, elevationAnimator)
+                            duration = 200
+                            interpolator = AccelerateDecelerateInterpolator()
+                        }
+                        animatorSet.start()
+                    }
+                }
+            }
+
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                // Ensure we're only moving draggable items
+                if (viewHolder.itemView.tag != "draggable" ||
+                    target.itemView.tag != "draggable") {
+                    return false
+                }
+
+                // Get the positions
+                val fromPosition = viewHolder.bindingAdapterPosition
+                val toPosition = target.bindingAdapterPosition
+
+                // Update the target position
+                targetPosition = toPosition
+
+                if (fromPosition < 0 || fromPosition >= selectedImages.size ||
+                    toPosition < 0 || toPosition >= selectedImages.size) {
+                    return false
+                }
+
+                try {
+                   // Collections.swap(selectedImages, fromPosition, toPosition)
+                    val removedItem = selectedImages.removeAt(fromPosition)
+                    selectedImages.add(toPosition, removedItem)
+                    requestModelBuild()
+
+                } catch (e: IndexOutOfBoundsException) {
+                    return false
+                }
+
+                requestModelBuild()
+
+
+                onDragComplete?.invoke(fromPosition, toPosition)
+
+                return true
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
 
             }
 
+            override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
+                super.clearView(recyclerView, viewHolder)
+
+
+                val scaleXAnimator = ObjectAnimator.ofFloat(viewHolder.itemView, "scaleX", 1.1f, 1f)
+                val scaleYAnimator = ObjectAnimator.ofFloat(viewHolder.itemView, "scaleY", 1.1f, 1f)
+                val elevationAnimator = ObjectAnimator.ofFloat(viewHolder.itemView, "elevation", 16f, 0f)
+
+                val animatorSet = AnimatorSet().apply {
+                    playTogether(scaleXAnimator, scaleYAnimator, elevationAnimator)
+                    duration = 200
+                    interpolator = AccelerateDecelerateInterpolator()
+                    doOnEnd {
+
+                        viewHolder.itemView.scaleX = 1f
+                        viewHolder.itemView.scaleY = 1f
+                        viewHolder.itemView.elevation = 0f
+                    }
+                }
+                animatorSet.start()
+            }
+
+            override fun onMoved(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                fromPos: Int,
+                target: RecyclerView.ViewHolder,
+                toPos: Int,
+                x: Int,
+                y: Int
+            ) {
+                super.onMoved(recyclerView, viewHolder, fromPos, target, toPos, x, y)
+
+
+                viewHolder.itemView.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+            }
+
+
+        }
+
+        // Attach the touch helper to the RecyclerView
+        val touchHelper = ItemTouchHelper(dragDropCallback)
+        touchHelper.attachToRecyclerView(recyclerView)
+    }
+
+
+    private fun transformScrollItems(recyclerView: RecyclerView) {
+        val centerX = recyclerView.width / 2f
+        val centerY = recyclerView.height / 2f
+
+        for (i in 0 until recyclerView.childCount) {
+            val child = recyclerView.getChildAt(i)
+            val childCenterX = child.x + child.width / 2f
+            val childCenterY = child.y + child.height / 2f
+
+            // Calculate distance from center
+            val distanceX = abs(centerX - childCenterX)
+            val distanceY = abs(centerY - childCenterY)
+            val maxDistance = recyclerView.width.coerceAtLeast(recyclerView.height) / 2f
+
+            // Calculate scale and rotation based on distance
+            val scale = 1f - (maxDistance.coerceAtMost(Math.max(distanceX, distanceY)) / maxDistance) * 0.2f
+            val rotation = (centerX - childCenterX) * 0.1f
+
+            child.scaleX = scale
+            child.scaleY = scale
+            child.rotation = rotation
         }
     }
 
-    private fun openImagePicker() {
+    private fun setupDragAndDrop(recyclerView: EpoxyRecyclerView) {
+        val touchCallback = object : ItemTouchHelper.Callback() {
+            override fun getMovementFlags(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder
+            ): Int {
+                // Enable drag only for non-first items
+                val dragFlags = if (viewHolder.adapterPosition > 0) {
+                    ItemTouchHelper.UP or ItemTouchHelper.DOWN
+                } else {
+                    0
+                }
+                return makeMovementFlags(dragFlags, 0)
+            }
 
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                val fromPosition = viewHolder.bindingAdapterPosition
+                val toPosition = target.bindingAdapterPosition
+                if (fromPosition == 0 || toPosition == 0) return false
+
+
+                val adjustedFromPosition = fromPosition - 1
+                val adjustedToPosition = toPosition - 1
+
+                try {
+                    Collections.swap(uploadedImages, fromPosition, toPosition)
+
+                } catch (e: IndexOutOfBoundsException) {
+                    Toast.makeText(this@MultipleImagePicker, "Invalid move", Toast.LENGTH_SHORT).show()
+                    return false
+                }
+                val movedImage = uploadedImages.removeAt(adjustedFromPosition)
+                uploadedImages.add(adjustedToPosition, movedImage)
+                return true
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+
+            }
+
+            override fun isItemViewSwipeEnabled(): Boolean = false
+
+            override fun canDropOver(
+                recyclerView: RecyclerView,
+                current: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return current.bindingAdapterPosition > 0 && target.bindingAdapterPosition > 0
+            }
+        }
+
+        // Create and attach the ItemTouchHelper
+        val itemTouchHelper = ItemTouchHelper(touchCallback)
+        itemTouchHelper.attachToRecyclerView(recyclerView)
+    }
+
+
+    private fun openImagePicker() {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
             addCategory(Intent.CATEGORY_OPENABLE)
             type = "image/*"

@@ -1,5 +1,6 @@
 package com.example.paymentgateway.imagepick
 
+import android.annotation.SuppressLint
 import android.net.Uri
 import android.view.View
 import com.airbnb.epoxy.EpoxyAttribute
@@ -16,27 +17,36 @@ abstract class ImagePickerModel : EpoxyModelWithHolder<ImagePickerModel.Holder>(
     @EpoxyAttribute
     lateinit var imageUri: Uri
 
-//    @EpoxyAttribute
-//    lateinit var imageUrl : String
-
     @EpoxyAttribute
     var onDeleteClick: ((View) -> Unit)? = null
+
+    @EpoxyAttribute
+    var onClick: ((View) -> Unit)? = null
+
+
 
     override fun getDefaultLayout() = R.layout.item_photo
 
     override fun bind(holder: Holder) {
+
+        //new line
+        super.bind(holder)
         Glide.with(holder.binding.root.context)
             .load(imageUri)
             .into(holder.binding.imageView)
 
 
-//        Glide.with(holder.binding.root.context)
-//            .load(imageUrl)
-//            .into(holder.binding.imageView)
-
         holder.binding.deletePic.setOnClickListener {
             onDeleteClick?.invoke(it)
         }
+
+        holder.binding.cardImageContainer.setOnClickListener {
+            onClick?.invoke(it)
+        }
+
+
+
+
     }
 
     class Holder : EpoxyHolder() {
@@ -44,6 +54,8 @@ abstract class ImagePickerModel : EpoxyModelWithHolder<ImagePickerModel.Holder>(
 
         override fun bindView(itemView: View) {
             binding=ItemPhotoBinding.bind(itemView)
+            itemView.tag="draggable"
+
 
         }
 

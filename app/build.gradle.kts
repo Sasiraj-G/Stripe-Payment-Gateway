@@ -133,6 +133,10 @@ dependencies {
     //google new place api
     implementation("com.google.android.libraries.places:places:3.5.0")
 
+    //image zoom
+    implementation("com.github.chrisbanes:PhotoView:2.3.0")
+    implementation("com.airbnb.android:epoxy-paging:3.9.0")
+
 
 
 

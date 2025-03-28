@@ -46,16 +46,17 @@
             </FrameLayout>
 
             <FrameLayout
-                android:id="@+id/fl_favorite"
+                android:id="@+id/delete_image"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_gravity="top|end"
                 android:layout_margin="12dp"
+
                 android:background="@drawable/black_background"
                 android:elevation="4dp">
                 <ImageView android:id="@+id/delete_pic"
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:layout_gravity="center"
                     android:src="@drawable/close" />
             </FrameLayout>
