@@ -37,7 +37,27 @@
             android:exported="false" />
         <activity
             android:name=".ExploreViewDetails"
-            android:exported="false" />
+            android:exported="true"
+            android:launchMode="singleTask"
+            >
+
+        <intent-filter android:autoVerify="true">
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data
+                android:host="staging1.flutterapps.io"
+                android:pathPrefix="/rooms/"
+                android:scheme="https" />
+
+        </intent-filter>
+            <!-- Android 13+ adaptive compatibility -->
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+
+
         <activity
             android:name=".CrashActivity"
             android:exported="false" />

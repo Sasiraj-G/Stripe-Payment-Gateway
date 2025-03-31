@@ -32,6 +32,8 @@ import androidx.recyclerview.widget.ItemTouchHelper.DOWN
 import androidx.recyclerview.widget.ItemTouchHelper.UP
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.epoxy.EpoxyController
+import com.airbnb.epoxy.EpoxyControllerAdapter
+import com.airbnb.epoxy.EpoxyModel
 import com.airbnb.epoxy.EpoxyRecyclerView
 import com.airbnb.epoxy.EpoxyTouchHelper
 import com.airbnb.epoxy.preload.addEpoxyPreloader
@@ -68,6 +70,8 @@ class MultipleImagePicker : AppCompatActivity() {
     private val selectedImages = mutableListOf<Uri>()
     private val uploadedImages = mutableListOf<String>()
     private var isLoading = false
+
+    var COVER_PHOTO_INDEX =0
 
     private val okHttpClient by lazy {
         OkHttpClient.Builder().build()
@@ -122,7 +126,6 @@ class MultipleImagePicker : AppCompatActivity() {
 
         isLoading = true
         binding.progressBar.visibility = View.VISIBLE
-
             lifecycleScope.launch {
                 try {
                     val response = apolloClient.query(Step2ListDetailsQuery(listId = "1973", listIdInt = 1973, preview = Optional.present(false))).execute()
@@ -332,7 +335,7 @@ class MultipleImagePicker : AppCompatActivity() {
                 }
                 selectedImages.forEachIndexed { index, imageUri ->
                     imagePicker {
-                        id(index)
+                        id("upload"+index)
                         imageUri(imageUri)
 
 
@@ -357,7 +360,7 @@ class MultipleImagePicker : AppCompatActivity() {
                 }
                 uploadedImages.forEachIndexed { index, imageUrl ->
                     uploadImagePicker {
-                        id("upload" + index)
+                        id( index)
                         imageUrl("https://staging1.flutterapps.io/images/upload/" + imageUrl)
                         onImageClick {
                             val intent = Intent(this@MultipleImagePicker, ImageViewer::class.java)
@@ -379,6 +382,7 @@ class MultipleImagePicker : AppCompatActivity() {
                     }
 
                 }
+
               //  setupDragAndDrop(recyclerView)
 
 //            enableFlexibleDragDrop(
@@ -699,7 +703,7 @@ class MultipleImagePicker : AppCompatActivity() {
             val maxDistance = recyclerView.width.coerceAtLeast(recyclerView.height) / 2f
 
             // Calculate scale and rotation based on distance
-            val scale = 1f - (maxDistance.coerceAtMost(Math.max(distanceX, distanceY)) / maxDistance) * 0.2f
+            val scale = 1f - (maxDistance.coerceAtMost(distanceX.coerceAtLeast(distanceY)) / maxDistance) * 0.2f
             val rotation = (centerX - childCenterX) * 0.1f
 
             child.scaleX = scale
@@ -767,6 +771,12 @@ class MultipleImagePicker : AppCompatActivity() {
         val itemTouchHelper = ItemTouchHelper(touchCallback)
         itemTouchHelper.attachToRecyclerView(recyclerView)
     }
+
+
+
+
+
+
 
 
     private fun openImagePicker() {

@@ -17,8 +17,6 @@
             android:layout_height="match_parent"
             android:id="@+id/imageView"
             app:imageUrl = "@{listImage.imageUrl}"/>
-
-
     </RelativeLayout>
 
 

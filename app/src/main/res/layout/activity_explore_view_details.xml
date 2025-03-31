@@ -7,12 +7,7 @@
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:layout_height="match_parent">
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appBarLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        app:elevation="0dp">
+
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
@@ -65,12 +60,11 @@
                     android:src="@drawable/flag_outline" />
             </LinearLayout>
         </androidx.appcompat.widget.Toolbar>
-    </com.google.android.material.appbar.AppBarLayout>
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -99,11 +93,17 @@
 
 
     <!-- Bottom booking bar -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        >
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:background="@android:color/white"
+        android:foregroundGravity="bottom"
         android:elevation="8dp"
         android:padding="16dp">
         <LinearLayout
@@ -136,9 +136,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="#FF5252"
-            android:paddingStart="24dp"
+            android:paddingStart="20dp"
             android:paddingTop="12dp"
-            android:paddingEnd="24dp"
+            android:paddingEnd="20dp"
             android:paddingBottom="12dp"
             android:text="Check availability"
             android:textAllCaps="false"
@@ -149,5 +149,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+    </RelativeLayout>
 
 </LinearLayout>

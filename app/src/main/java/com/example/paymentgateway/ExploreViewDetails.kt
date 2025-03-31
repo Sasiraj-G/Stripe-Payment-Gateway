@@ -4,13 +4,17 @@ package com.example.paymentgateway
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.Manifest
+
 
 import android.widget.ImageButton
 import android.widget.ImageView
+import androidx.appcompat.app.AlertDialog
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -42,6 +46,8 @@ class ExploreViewDetails : AppCompatActivity() {
 
     private var isLoading = false
 
+    private var listId: String? = null
+
 
 
 
@@ -54,7 +60,10 @@ class ExploreViewDetails : AppCompatActivity() {
         apolloClient =
             ApolloClient.Builder().serverUrl("https://staging1.flutterapps.io/api/graphql").build()
 
-        fetchExploreData()
+        handleDeepLink(intent)
+        fetchExploreData("732")
+
+
 
         // Initialize heart button
         heartButton = findViewById(R.id.btnFavorite)
@@ -74,7 +83,68 @@ class ExploreViewDetails : AppCompatActivity() {
 
     }
 
-    private fun fetchExploreData() {
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        intent?.let {
+            setIntent(it)
+            handleDeepLink(it)
+        }
+    }
+
+    private fun extractNumericId(rawData: String): Int? {
+        return try {
+            val parts = rawData.split("-")
+            val numericPart = parts.lastOrNull()
+
+            numericPart?.toInt() ?: run {
+                Log.e("ID Extraction", "No numeric part found in rawData: $rawData")
+                null
+            }
+        } catch (e: NumberFormatException) {
+            Log.e("ID Extraction", "Invalid numeric format in rawData: $rawData", e)
+            null
+        }
+    }
+
+
+    private fun handleDeepLink(intent: Intent) {
+        val data = intent.data ?: run {
+            return
+        }
+        if (data.host == "staging1.flutterapps.io") {
+            val pathSegments = data.pathSegments
+            if (pathSegments.size >= 2 && pathSegments[0] == "rooms") {
+                val rawData = pathSegments[1]
+                listId = extractNumericId(rawData).toString()
+                listId?.let { fetchExploreData(it) }
+            } else {
+                Log.d("DeepLink", "Invalid path segments: $pathSegments")
+            }
+        }
+    }
+
+
+//    private fun showErrorAndFinish(message: String) {
+//        AlertDialog.Builder(this)
+//            .setTitle("Error")
+//            .setMessage(message)
+//            .setPositiveButton("OK") { _, _ ->
+//                if (Build.VERSION.SDK_INT >= 34) {
+//                    finishAndRemoveTask()
+//                } else {
+//                    finish()
+//                }
+//            }
+//            .setCancelable(false)
+//            .show()
+//    }
+
+
+    private fun fetchExploreData(itemId : String?) {
+       val id = itemId?.toInt()
+        val roomId = id!!  // convert Int? to Int
+        Log.d("DeepLink", "Inside Extracted ID: $roomId")
         if (isLoading) return
         isLoading = true
         binding.progressBar.visibility = View.VISIBLE
@@ -83,7 +153,7 @@ class ExploreViewDetails : AppCompatActivity() {
             try {
 
 
-                val query = ViewListingDetailsQuery(listId = 732, preview = Optional.present(false))
+                val query = ViewListingDetailsQuery(listId = roomId, preview = Optional.present(false))
                 val viewListingDetailsResponse = apolloClient.query(query).execute().data?.viewListing
                 Log.d("response","Viewlisting $viewListingDetailsResponse")
                handleResponse(viewListingDetailsResponse)
