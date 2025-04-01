@@ -1,6 +1,7 @@
 package com.example.paymentgateway.imagepick
 
 
+import com.example.paymentgateway.imagepick.testing.MainController
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 
@@ -22,7 +23,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 
 import androidx.core.animation.doOnEnd
-import androidx.core.view.doOnPreDraw
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -32,17 +32,12 @@ import androidx.recyclerview.widget.ItemTouchHelper.DOWN
 import androidx.recyclerview.widget.ItemTouchHelper.UP
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.epoxy.EpoxyController
-import com.airbnb.epoxy.EpoxyControllerAdapter
-import com.airbnb.epoxy.EpoxyModel
 import com.airbnb.epoxy.EpoxyRecyclerView
-import com.airbnb.epoxy.EpoxyTouchHelper
-import com.airbnb.epoxy.preload.addEpoxyPreloader
 
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.Optional
 import com.apollographql.apollo3.network.okHttpClient
 import com.example.paymentgateway.Constants
-import com.example.paymentgateway.R
 import com.example.paymentgateway.RemoveListPhotosMutation
 import com.example.paymentgateway.Step2ListDetailsQuery
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -50,6 +45,10 @@ import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import com.example.paymentgateway.databinding.ActivityMultipleImagePickerBinding
+import com.example.paymentgateway.imagepick.testing.MainCallbackAdapter
+import com.example.paymentgateway.imagepick.testing.MainEpoxyTouchCallback
+import com.example.paymentgateway.imagepick.testing.MainSimpleOnItemTouchListener
+import com.example.paymentgateway.imagepick.testing.MainViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -64,12 +63,18 @@ import java.util.Collections
 import kotlin.math.abs
 
 
-class MultipleImagePicker : AppCompatActivity() {
-    private lateinit var binding: ActivityMultipleImagePickerBinding
+class MultipleImagePicker : AppCompatActivity(),MainCallbackAdapter,MainSimpleOnItemTouchListener.OnInterceptTouchEventListener {
+    lateinit var binding: ActivityMultipleImagePickerBinding
     private lateinit var apolloClient: ApolloClient
-    private val selectedImages = mutableListOf<Uri>()
-    private val uploadedImages = mutableListOf<String>()
+    val selectedImages = mutableListOf<Uri>()
+     val uploadedImages = mutableListOf<String>()
     private var isLoading = false
+    lateinit var callbackAdapter: MainCallbackAdapter
+
+    private lateinit var controller: MainController
+    private lateinit var itemTouchHelper: ItemTouchHelper
+
+    private lateinit var viewModel: MainViewModel
 
     var COVER_PHOTO_INDEX =0
 
@@ -113,17 +118,128 @@ class MultipleImagePicker : AppCompatActivity() {
             .okHttpClient(okHttpClient)
             .build()
 
-        setupRecyclerView()
+        // setupRecyclerView()
+        setupRecyclerViews() //new
         setupListeners()
         fetchExistingPhotos()
+
+        // Initialize ViewModel
+        viewModel = MainViewModel()
+        loadExistingImages()
+
+        // Initialize controller and setup RecyclerView
+        setupRecyclerViews()
+
+        // Observe ViewModel data
+        observeViewModelData()
+
+
+    }
+
+    private fun observeViewModelData() {
+        viewModel.firstRowsData.observe(this) { rows ->
+            val firstSectionImages = rows.map { it.image }
+                .filter { it.isNotEmpty() }
+            updateImageSections(firstSectionImages, viewModel.secondRowsData.value?.map { it.image } ?: emptyList())
+        }
+
+        viewModel.secondRowsData.observe(this) { rows ->
+            val secondSectionImages = rows.map { it.image }
+                .filter { it.isNotEmpty() } // Only include non-empty image URLs
+            updateImageSections(viewModel.firstRowsData.value?.map { it.image } ?: emptyList(), secondSectionImages)
+        }
+    }
+    private fun updateImageSections(firstSectionImages: List<String>, secondSectionImages: List<String>) {
+
+        uploadedImages.clear()
+        uploadedImages.addAll(firstSectionImages.filter { it.isNotEmpty() })
+        uploadedImages.addAll(secondSectionImages.filter { it.isNotEmpty() })
+
+        controller.setData(uploadedImages, selectedImages)
+    }
+    private fun loadExistingImages() {
+        uploadedImages.clear()
+        uploadedImages.addAll(uploadedImages)
+        updateViewModelWithImages(uploadedImages)
+        controller.setData(uploadedImages, selectedImages)
+    }
+
+
+
+    private fun updateViewModelWithImages(images: List<String>) {
+
+        val rows = images.mapIndexed { index, imageUrl ->
+            MainViewModel.Row(
+                id = imageUrl,
+                title = "Image ${index + 1}",
+                image = imageUrl
+            )
+        }
+
+        viewModel.updateRows(rows)
+    }
+
+
+    private fun setupRecyclerViews() {
+        val gridLayoutManager = GridLayoutManager(this, 2)
+        binding.imageRecyclerView.layoutManager = gridLayoutManager
+
+        // Initialize the controller
+        controller = MainController(this, ::openImagePicker)
+
+        binding.imageRecyclerView.adapter = controller.adapter //new line add
+        binding.imageRecyclerView.setController(controller)
+
+        val touchCallback = MainEpoxyTouchCallback(controller, object : MainEpoxyTouchCallback.OnRowMoveListener {
+            override fun onMoved(movingRowId: String, shiftingRowId: String) {
+
+                viewModel.moveRow(movingRowId, shiftingRowId)
+
+                // Handle the move operation in local data too
+                val movingIndex = uploadedImages.indexOfFirst { it == movingRowId }
+                val shiftingIndex = uploadedImages.indexOfFirst { it == shiftingRowId }
+
+                if (movingIndex != -1 && shiftingIndex != -1) {
+                    val temp = uploadedImages[movingIndex]
+                    uploadedImages.removeAt(movingIndex)
+                    uploadedImages.add(shiftingIndex, temp)
+                    controller.setData(uploadedImages, selectedImages)
+                    controller.requestModelBuild()
+                }
+            }
+        })
+
+
+        itemTouchHelper = ItemTouchHelper(touchCallback)
+        itemTouchHelper.attachToRecyclerView(binding.imageRecyclerView)
+        binding.imageRecyclerView.addOnItemTouchListener(MainSimpleOnItemTouchListener(this))
+        controller.setItemTouchHelper(itemTouchHelper)
+        controller.setData(uploadedImages, selectedImages)
+
+        controller.requestModelBuild() //new
 
     }
 
 
+    override fun onDragStart() {
+        binding.imageRecyclerView.isNestedScrollingEnabled = false
+    }
+
+    override fun onDragEnd() {
+       binding.imageRecyclerView.isNestedScrollingEnabled = true
+    }
+
+
+    override fun onInterceptTouchEvent(touchedPosition: Int) {
+
+        if (touchedPosition >= 0) {
+
+        }
+    }
+
     private fun fetchExistingPhotos() {
         Log.d("TEST","fff")
         if (isLoading) return
-
         isLoading = true
         binding.progressBar.visibility = View.VISIBLE
             lifecycleScope.launch {
@@ -134,7 +250,9 @@ class MultipleImagePicker : AppCompatActivity() {
                         val existingImageUrls = photos.mapNotNull { it?.name }
                         Log.d("TEST", "Existing image URLs: $existingImageUrls")
                         uploadedImages.addAll(existingImageUrls)
-                        setupRecyclerView()
+                       // setupRecyclerView()
+                        setupRecyclerViews()
+                        controller.requestModelBuild()  //new
 //                        epoxyController.requestModelBuild()
                     }
                 } catch (e: Exception) {
@@ -172,7 +290,9 @@ class MultipleImagePicker : AppCompatActivity() {
         uploadImagesToServer()
         selectedImages.addAll(newImages)
         selectedImages.addAll(singleImage)
-        setupRecyclerView()
+        controller.setData(uploadedImages, selectedImages)
+        controller.requestModelBuild()  //new
+        setupRecyclerViews()
         // Rebuild models
 //        epoxyController.requestModelBuild()
 
@@ -292,7 +412,7 @@ class MultipleImagePicker : AppCompatActivity() {
         return tempFile
     }
 
-    private fun deleteImage(imageUrl: String) {
+    fun deleteImage(imageUrl: String) {
 
         lifecycleScope.launch {
             try {
@@ -306,7 +426,9 @@ class MultipleImagePicker : AppCompatActivity() {
                 Log.d("TESTING", "mutationResult: $mutationResult")
                 if (mutationResult?.status == 200) {
                     uploadedImages.remove(imageUrl)
-                    setupRecyclerView()
+//                    setupRecyclerView()
+                    setupRecyclerViews()
+                    controller.requestModelBuild()  //new
 //                    epoxyController.requestModelBuild()
                     Toast.makeText(this@MultipleImagePicker, "Image deleted successfully", Toast.LENGTH_SHORT).show()
                 } else {
@@ -383,393 +505,11 @@ class MultipleImagePicker : AppCompatActivity() {
 
                 }
 
-              //  setupDragAndDrop(recyclerView)
-
-//            enableFlexibleDragDrop(
-//                recyclerView = binding.imageRecyclerView,
-//                selectedImages = uploadedImages,
-//                onDragComplete = { fromPosition, toPosition ->
-
-//                    Log.d("DragDrop", "Moved from $fromPosition to $toPosition")
-//                    setupRecyclerView()
-//                }
-//            )
-
-//            enableDragDrop(
-//                recyclerView = binding.imageRecyclerView,
-//                selectedImages = uploadedImages,
-//                onDragComplete = { fromPosition, toPosition ->
-//                    Log.d("DragDrop", "Moved from $fromPosition to $toPosition")
-//
-//                    setupRecyclerView()
-//                }
-//            )
-                setupDragAndDrop(recyclerView)
-
-                // Setup drag and drop with EpoxyTouchHelper
-
-
-                // Smooth scroll transformation
-//            binding.imageRecyclerView.doOnPreDraw {
-//                binding.imageRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-//                    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-//                        transformScrollItems(recyclerView)
-//                    }
-//                })
-//            }
             }
         }
 
 
 
-    }
-
-    fun EpoxyController.enableDragDrop(
-        recyclerView: RecyclerView,
-        selectedImages: MutableList<String>,
-        onDragComplete: ((fromPosition: Int, toPosition: Int) -> Unit)? = null
-    ) {
-        val dragDropCallback = object : ItemTouchHelper.Callback() {
-            private var draggedItem: RecyclerView.ViewHolder? = null
-
-            override fun getMovementFlags(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder
-            ): Int {
-                // Only allow dragging for image picker models
-                return if (viewHolder.itemView.tag == "draggable") {
-                    val dragFlags = UP or
-                            DOWN or
-                            ItemTouchHelper.LEFT or
-                            ItemTouchHelper.RIGHT
-                    makeMovementFlags(dragFlags, 0)
-                } else {
-                    makeMovementFlags(0, 0)
-                }
-            }
-
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                if (viewHolder.itemView.tag != "draggable" ||
-                    target.itemView.tag != "draggable") {
-                    return false
-                }
-
-                val fromPosition = viewHolder.bindingAdapterPosition
-                val toPosition = target.bindingAdapterPosition
-
-                if (fromPosition < 0 || fromPosition >= selectedImages.size ||
-                    toPosition < 0 || toPosition >= selectedImages.size) {
-                    return false
-                }
-                try {
-                    Collections.swap(selectedImages, fromPosition, toPosition)
-                    requestModelBuild()
-
-                } catch (e: IndexOutOfBoundsException) {
-                    return false
-                }
-              //  recyclerView.adapter?.notifyItemMoved(fromPosition, toPosition)
-                requestModelBuild()
-                onDragComplete?.invoke(fromPosition, toPosition)
-                return true
-            }
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                // No swiping implementation
-            }
-
-            override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
-                super.onSelectedChanged(viewHolder, actionState)
-                viewHolder?.let { holder ->
-                    when (actionState) {
-                        ItemTouchHelper.ACTION_STATE_DRAG -> {
-
-                            holder.itemView.animate()
-                                .scaleX(0.9f)
-                                .scaleY(0.9f)
-                                .translationZ(16f)
-                                .setDuration(200)
-                                .setInterpolator(AccelerateDecelerateInterpolator())
-                                .start()
-                        }
-                        ItemTouchHelper.ACTION_STATE_IDLE -> {
-                            // Reset view after drag
-                            holder.itemView.animate()
-                                .scaleX(1f)
-                                .scaleY(1f)
-                                .translationZ(0f)
-                                .setDuration(200)
-                                .setInterpolator(AccelerateDecelerateInterpolator())
-                                .start()
-                        }
-                    }
-                }
-            }
-
-            override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
-                super.clearView(recyclerView, viewHolder)
-
-                // Restore original state with animation
-                val scaleXAnimator = ObjectAnimator.ofFloat(viewHolder.itemView, "scaleX", 1.1f, 1f)
-                val scaleYAnimator = ObjectAnimator.ofFloat(viewHolder.itemView, "scaleY", 1.1f, 1f)
-                val elevationAnimator = ObjectAnimator.ofFloat(viewHolder.itemView, "elevation", 16f, 0f)
-
-                val animatorSet = AnimatorSet().apply {
-                    playTogether(scaleXAnimator, scaleYAnimator, elevationAnimator)
-                    duration = 200
-                    interpolator = AccelerateDecelerateInterpolator()
-                    doOnEnd {
-                        // Ensure we reset the view completely
-                        viewHolder.itemView.scaleX = 1f
-                        viewHolder.itemView.scaleY = 1f
-                        viewHolder.itemView.elevation = 0f
-                    }
-                }
-                animatorSet.start()
-            }
-            override fun onMoved(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                fromPos: Int,
-                target: RecyclerView.ViewHolder,
-                toPos: Int,
-                x: Int,
-                y: Int
-            ) {
-                super.onMoved(recyclerView, viewHolder, fromPos, target, toPos, x, y)
-                viewHolder.itemView.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
-            }
-        }
-
-        val touchHelper = ItemTouchHelper(dragDropCallback)
-        touchHelper.attachToRecyclerView(recyclerView)
-    }
-
-    fun EpoxyController.enableFlexibleDragDrop(
-        recyclerView: RecyclerView,
-        selectedImages: MutableList<String>,
-        onDragComplete: ((fromPosition: Int, toPosition: Int) -> Unit)? = null
-    ) {
-        val dragDropCallback = object : ItemTouchHelper.Callback() {
-            // Track the original position to ensure correct repositioning
-            private var draggedItemOriginalPosition: Int = RecyclerView.NO_POSITION
-            private var targetPosition: Int = RecyclerView.NO_POSITION
-
-            override fun getMovementFlags(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder
-            ): Int {
-                return if (viewHolder.itemView.tag == "draggable") {
-                    val dragFlags = UP or
-                            DOWN or
-                            ItemTouchHelper.LEFT or
-                            ItemTouchHelper.RIGHT
-                    makeMovementFlags(dragFlags, 0)
-                } else {
-                    makeMovementFlags(0, 0)
-                }
-            }
-
-            override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
-                super.onSelectedChanged(viewHolder, actionState)
-
-                viewHolder?.let {
-                    if (actionState == ACTION_STATE_DRAG) {
-
-                        draggedItemOriginalPosition = it.adapterPosition
-
-                        // Apply scaling and elevation animation
-                        val scaleXAnimator = ObjectAnimator.ofFloat(it.itemView, "scaleX", 1f, 1.1f)
-                        val scaleYAnimator = ObjectAnimator.ofFloat(it.itemView, "scaleY", 1f, 1.1f)
-                        val elevationAnimator = ObjectAnimator.ofFloat(it.itemView, "elevation", 0f, 16f)
-
-                        val animatorSet = AnimatorSet().apply {
-                            playTogether(scaleXAnimator, scaleYAnimator, elevationAnimator)
-                            duration = 200
-                            interpolator = AccelerateDecelerateInterpolator()
-                        }
-                        animatorSet.start()
-                    }
-                }
-            }
-
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                // Ensure we're only moving draggable items
-                if (viewHolder.itemView.tag != "draggable" ||
-                    target.itemView.tag != "draggable") {
-                    return false
-                }
-
-                // Get the positions
-                val fromPosition = viewHolder.bindingAdapterPosition
-                val toPosition = target.bindingAdapterPosition
-
-                // Update the target position
-                targetPosition = toPosition
-
-                if (fromPosition < 0 || fromPosition >= selectedImages.size ||
-                    toPosition < 0 || toPosition >= selectedImages.size) {
-                    return false
-                }
-
-                try {
-                   // Collections.swap(selectedImages, fromPosition, toPosition)
-                    val removedItem = selectedImages.removeAt(fromPosition)
-                    selectedImages.add(toPosition, removedItem)
-                    requestModelBuild()
-
-                } catch (e: IndexOutOfBoundsException) {
-                    return false
-                }
-
-                requestModelBuild()
-
-
-                onDragComplete?.invoke(fromPosition, toPosition)
-
-                return true
-            }
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-
-            }
-
-            override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
-                super.clearView(recyclerView, viewHolder)
-
-
-                val scaleXAnimator = ObjectAnimator.ofFloat(viewHolder.itemView, "scaleX", 1.1f, 1f)
-                val scaleYAnimator = ObjectAnimator.ofFloat(viewHolder.itemView, "scaleY", 1.1f, 1f)
-                val elevationAnimator = ObjectAnimator.ofFloat(viewHolder.itemView, "elevation", 16f, 0f)
-
-                val animatorSet = AnimatorSet().apply {
-                    playTogether(scaleXAnimator, scaleYAnimator, elevationAnimator)
-                    duration = 200
-                    interpolator = AccelerateDecelerateInterpolator()
-                    doOnEnd {
-
-                        viewHolder.itemView.scaleX = 1f
-                        viewHolder.itemView.scaleY = 1f
-                        viewHolder.itemView.elevation = 0f
-                    }
-                }
-                animatorSet.start()
-            }
-
-            override fun onMoved(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                fromPos: Int,
-                target: RecyclerView.ViewHolder,
-                toPos: Int,
-                x: Int,
-                y: Int
-            ) {
-                super.onMoved(recyclerView, viewHolder, fromPos, target, toPos, x, y)
-
-
-                viewHolder.itemView.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
-            }
-
-
-        }
-
-        // Attach the touch helper to the RecyclerView
-        val touchHelper = ItemTouchHelper(dragDropCallback)
-        touchHelper.attachToRecyclerView(recyclerView)
-    }
-
-
-    private fun transformScrollItems(recyclerView: RecyclerView) {
-        val centerX = recyclerView.width / 2f
-        val centerY = recyclerView.height / 2f
-
-        for (i in 0 until recyclerView.childCount) {
-            val child = recyclerView.getChildAt(i)
-            val childCenterX = child.x + child.width / 2f
-            val childCenterY = child.y + child.height / 2f
-
-            // Calculate distance from center
-            val distanceX = abs(centerX - childCenterX)
-            val distanceY = abs(centerY - childCenterY)
-            val maxDistance = recyclerView.width.coerceAtLeast(recyclerView.height) / 2f
-
-            // Calculate scale and rotation based on distance
-            val scale = 1f - (maxDistance.coerceAtMost(distanceX.coerceAtLeast(distanceY)) / maxDistance) * 0.2f
-            val rotation = (centerX - childCenterX) * 0.1f
-
-            child.scaleX = scale
-            child.scaleY = scale
-            child.rotation = rotation
-        }
-    }
-
-    private fun setupDragAndDrop(recyclerView: EpoxyRecyclerView) {
-        val touchCallback = object : ItemTouchHelper.Callback() {
-            override fun getMovementFlags(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder
-            ): Int {
-                // Enable drag only for non-first items
-                val dragFlags = if (viewHolder.adapterPosition > 0) {
-                    ItemTouchHelper.UP or ItemTouchHelper.DOWN
-                } else {
-                    0
-                }
-                return makeMovementFlags(dragFlags, 0)
-            }
-
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                val fromPosition = viewHolder.bindingAdapterPosition
-                val toPosition = target.bindingAdapterPosition
-                if (fromPosition == 0 || toPosition == 0) return false
-
-
-                val adjustedFromPosition = fromPosition - 1
-                val adjustedToPosition = toPosition - 1
-
-                try {
-                    Collections.swap(uploadedImages, fromPosition, toPosition)
-
-                } catch (e: IndexOutOfBoundsException) {
-                    Toast.makeText(this@MultipleImagePicker, "Invalid move", Toast.LENGTH_SHORT).show()
-                    return false
-                }
-                val movedImage = uploadedImages.removeAt(adjustedFromPosition)
-                uploadedImages.add(adjustedToPosition, movedImage)
-                return true
-            }
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-
-            }
-
-            override fun isItemViewSwipeEnabled(): Boolean = false
-
-            override fun canDropOver(
-                recyclerView: RecyclerView,
-                current: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                return current.bindingAdapterPosition > 0 && target.bindingAdapterPosition > 0
-            }
-        }
-
-        // Create and attach the ItemTouchHelper
-        val itemTouchHelper = ItemTouchHelper(touchCallback)
-        itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 
 

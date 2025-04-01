@@ -26,12 +26,20 @@ abstract class UploadImagePickerModel : EpoxyModelWithHolder<UploadImagePickerMo
     var onDeleteClick: ((View) -> Unit)? = null
 
     @EpoxyAttribute
+    lateinit var rowId: String   //new
+    @EpoxyAttribute
+    lateinit var title: String   //new
+    @EpoxyAttribute
+    var onDragHandleTouchListener: View.OnTouchListener? = null  //new
+
+    @EpoxyAttribute
     lateinit var gridId: String //new
 
     @EpoxyAttribute
     var onImageClick: ((View) -> Unit)? = null
 
     override fun getDefaultLayout() = R.layout.item_upload_server
+    @SuppressLint("ClickableViewAccessibility")
     override fun bind(holder: Holder) {
         Glide.with(holder.binding.root.context)
             .load(imageUrl)
@@ -46,6 +54,16 @@ abstract class UploadImagePickerModel : EpoxyModelWithHolder<UploadImagePickerMo
             onImageClick?.invoke(it)
 
         }
+        holder.binding.cardImageContainer.setOnTouchListener(onDragHandleTouchListener)   //new
+    }
+
+
+
+    @SuppressLint("ClickableViewAccessibility")
+    override fun unbind(holder: Holder) {
+        with(holder) {
+            binding.cardImageContainer.setOnTouchListener(null)
+        }
     }
 
 
@@ -53,7 +71,7 @@ abstract class UploadImagePickerModel : EpoxyModelWithHolder<UploadImagePickerMo
         lateinit var binding: ItemUploadServerBinding
         override fun bindView(itemView: View) {
             binding= ItemUploadServerBinding.bind(itemView)
-           itemView.tag="draggable"
+           itemView.tag=  "draggable"
 
         }
 

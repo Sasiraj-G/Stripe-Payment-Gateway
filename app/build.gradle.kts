@@ -27,7 +27,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.paymentgateway"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -79,7 +79,7 @@ dependencies {
 
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.4.1")  //2.8.7 -> 2.4.1
     implementation("com.stripe:stripe-android:20.1.0")
 
  //paypal payment
@@ -95,8 +95,8 @@ dependencies {
     // Coil for image loading
     implementation(libs.coil)
     // ViewModel and LiveData
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
-    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.5.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1")  //2.5.1 -> 2.4.1
+    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.4.1")
 
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
