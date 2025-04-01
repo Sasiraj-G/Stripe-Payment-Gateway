@@ -138,6 +138,15 @@ dependencies {
     implementation("com.airbnb.android:epoxy-paging:3.9.0")
 
 
+    //veriff
+    implementation("com.veriff:veriff-library:6.5.0")
+    implementation ("com.squareup.moshi:moshi:1.14.0")
+    implementation ("com.squareup.moshi:moshi-kotlin:1.14.0")
+    implementation ("com.squareup.moshi:moshi-adapters:1.14.0")
+    implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
+    kapt ("com.squareup.moshi:moshi-kotlin-codegen:1.14.0")
+
+
 
 
 

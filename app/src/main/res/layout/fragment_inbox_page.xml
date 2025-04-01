@@ -27,6 +27,17 @@
         android:id="@+id/locationSearch"
         android:layout_gravity="center"
         android:gravity="center" />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Veriff"
+        android:layout_marginTop="12dp"
+        android:textSize="18sp"
+        android:paddingHorizontal="24dp"
+        android:backgroundTint="@color/colorAccent"
+        android:id="@+id/veriff"
+        android:layout_gravity="center"
+        android:gravity="center" />
 
 
 </LinearLayout>

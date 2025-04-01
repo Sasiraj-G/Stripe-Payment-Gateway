@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.paymentgateway.databinding.FragmentInboxPageBinding
 import com.example.paymentgateway.imagepick.MultipleImagePicker
+import com.example.paymentgateway.veriff.Veriff
 
 
 class InboxPage : Fragment() {
@@ -33,6 +34,10 @@ class InboxPage : Fragment() {
         }
         binding.locationSearch.setOnClickListener {
             val intent = Intent(requireContext(), LocationSearch::class.java)
+            startActivity(intent)
+        }
+        binding.veriff.setOnClickListener {
+            val intent = Intent(requireContext(), Veriff::class.java)
             startActivity(intent)
         }
 

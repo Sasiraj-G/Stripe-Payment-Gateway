@@ -8,6 +8,7 @@ pluginManagement {
             }
         }
 
+
         mavenCentral()
         gradlePluginPortal()
         maven { setUrl("https://jitpack.io") }
@@ -19,6 +20,7 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
+        maven { url = uri("https://cdn.veriff.me/android/") }
         google()
         mavenCentral()
         maven { setUrl("https://jitpack.io") }

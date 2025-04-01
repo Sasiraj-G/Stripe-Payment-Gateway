@@ -27,6 +27,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".veriff.Veriff"
+            android:exported="false" />
+        <activity
             android:name=".imagepick.ImageViewer"
             android:exported="false" />
         <activity
@@ -38,26 +41,23 @@
         <activity
             android:name=".ExploreViewDetails"
             android:exported="true"
-            android:launchMode="singleTask"
-            >
+            android:launchMode="singleTask">
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
 
-        <intent-filter android:autoVerify="true">
-            <action android:name="android.intent.action.VIEW" />
-            <category android:name="android.intent.category.DEFAULT" />
-            <category android:name="android.intent.category.BROWSABLE" />
-            <data
-                android:host="staging1.flutterapps.io"
-                android:pathPrefix="/rooms/"
-                android:scheme="https" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
 
-        </intent-filter>
+                <data
+                    android:host="staging1.flutterapps.io"
+                    android:pathPrefix="/rooms/"
+                    android:scheme="https" />
+            </intent-filter>
             <!-- Android 13+ adaptive compatibility -->
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
-
-
         <activity
             android:name=".CrashActivity"
             android:exported="false" />
