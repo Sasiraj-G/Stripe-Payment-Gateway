@@ -4,6 +4,8 @@ package com.example.paymentgateway.graphqlimp
 import android.content.Intent
 import android.net.Uri
 import android.view.View
+import android.widget.ImageView
+import androidx.core.view.ViewCompat
 import androidx.databinding.ViewDataBinding
 import coil.load
 import coil.transform.RoundedCornersTransformation
@@ -12,6 +14,7 @@ import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyHolder
 import com.airbnb.epoxy.EpoxyModelClass
 import com.airbnb.epoxy.EpoxyModelWithHolder
+import com.bumptech.glide.Glide
 import com.example.paymentgateway.R
 import com.example.paymentgateway.databinding.ItemReservationBinding
 import kotlin.coroutines.coroutineContext
@@ -20,6 +23,15 @@ import kotlin.coroutines.coroutineContext
 abstract class TripEpoxyItem : DataBindingEpoxyModel() {
     @EpoxyAttribute
     lateinit var trip: Trip
+
+    @EpoxyAttribute
+    var profileImageUrl: String? = null
+
+    @EpoxyAttribute(EpoxyAttribute.Option.DoNotHash)
+    var onProfileImageClicked: ((ImageView) -> Unit)? = null
+
+    @EpoxyAttribute
+    lateinit var onProfileImageClickListener: View.OnClickListener
 
 //    @EpoxyAttribute
 //    lateinit var onHostEmailClick: (Trip) -> Unit
@@ -46,6 +58,22 @@ abstract class TripEpoxyItem : DataBindingEpoxyModel() {
                 binding.root.context.startActivity(intent)
 
             }
+
+            //image click listener
+            profileImageUrl?.let {
+                Glide.with(binding.profileImage.context)
+                    .load(it)
+                    .circleCrop()
+                    .into(binding.profileImage)
+            }
+
+            // Set transition name for shared element
+            ViewCompat.setTransitionName(binding.profileImage, trip.id)
+
+            binding.profileImage.setOnClickListener(onProfileImageClickListener)
+
+
+
 
             // Load image using Coil
 

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+             android:id="@+id/nav_graph"
+    app:startDestination="@id/tripsPage">
+    <fragment
+        android:id="@+id/tripsPage"
+        android:name="com.example.paymentgateway.TripsPage"
+        android:label="TripsPage" >
+        <action
+            android:id="@+id/action_tripsPage_to_imageTransitionFragment2"
+            app:destination="@id/imageTransitionFragment2" />
+    </fragment>
+    <fragment
+        android:id="@+id/imageTransitionFragment2"
+        android:name="com.example.paymentgateway.graphqlimp.ImageTransitionFragment"
+        android:label="ImageTransitionFragment" >
+        <action
+            android:id="@+id/action_imageTransitionFragment2_to_tripsPage"
+            app:destination="@id/tripsPage" />
+    </fragment>
+</navigation>

@@ -5,6 +5,7 @@ plugins {
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
     id("com.apollographql.apollo3") version "3.8.0"
+    id("androidx.navigation.safeargs.kotlin")
 }
 
 
@@ -71,6 +72,7 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.swiperefreshlayout)
+    implementation(libs.androidx.navigation.fragment.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -145,6 +147,15 @@ dependencies {
     implementation ("com.squareup.moshi:moshi-adapters:1.14.0")
     implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
     kapt ("com.squareup.moshi:moshi-kotlin-codegen:1.14.0")
+
+
+    //shimmer effect
+
+    implementation("com.facebook.shimmer:shimmer:0.5.0")
+
+
+
+    implementation("androidx.navigation:navigation-ui-ktx:2.8.9")
 
 
 

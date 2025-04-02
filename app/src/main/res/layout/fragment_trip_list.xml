@@ -4,24 +4,44 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmer_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <include layout="@layout/item_reservation_shimmer"/>
+            <include layout="@layout/item_reservation_shimmer"/>
+            <include layout="@layout/item_reservation_shimmer"/>
+            <include layout="@layout/item_reservation_shimmer"/>
+            <include layout="@layout/item_reservation_shimmer"/>
+            <include layout="@layout/item_reservation_shimmer"/>
+            <include layout="@layout/item_reservation_shimmer"/>
+            <include layout="@layout/item_reservation_shimmer"/>
+
+        </LinearLayout>
+        </ScrollView>
+
+
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
 
         <com.airbnb.epoxy.EpoxyRecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:visibility="gone"
     />
 
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+
 
     <LinearLayout
         android:id="@+id/emptyStateView"

@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isGone
 
 import com.example.paymentgateway.databinding.ActivityRentAllMainActivityBinding
+import com.example.paymentgateway.graphqlimp.ImageTransitionFragment
 
 class RentAllMainAactivity : AppCompatActivity() {
 
@@ -40,10 +41,19 @@ class RentAllMainAactivity : AppCompatActivity() {
 
         binding.fab.setOnClickListener {
             supportFragmentManager.beginTransaction().replace(R.id.fragment_containerView,TripsPage()).commit()
+
         }
 
 
+    }
 
+    override fun onBackPressed() {
+        // Get the current fragment
 
+        if (supportFragmentManager.backStackEntryCount > 0) {
+            supportFragmentManager.popBackStackImmediate()
+        } else {
+            super.onBackPressed()
+        }
     }
 }

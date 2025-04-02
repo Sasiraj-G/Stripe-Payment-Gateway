@@ -1,9 +1,10 @@
 package com.example.paymentgateway.graphqlimp
 
+import android.widget.ImageView
 import com.airbnb.epoxy.EpoxyController
 
 class TripEpoxyController(
-    private var onHostEmailClick: (Trip) -> Unit
+    private val onProfileImageClick: (Trip, ImageView) -> Unit
 ) : EpoxyController() {
     private val trips = mutableListOf<Trip>()
 
@@ -12,6 +13,7 @@ class TripEpoxyController(
         trips.addAll(newTrips)
         requestModelBuild()
     }
+
 
     fun addData(newTrips: List<Trip>) {
         trips.addAll(newTrips)
@@ -23,8 +25,12 @@ class TripEpoxyController(
             tripEpoxyItem {
                 id(trip.id)
                 trip(trip)
-//                onHostEmailClick(@TripListFragment.onHostEmailClick)
-//                onHostEmailClick(this@TripEpoxyController.onHostEmailClick)
+                profileImageUrl(trip.imageUrl)
+                onProfileImageClickListener { view ->
+                    onProfileImageClick(trip, view as ImageView)
+                }
+
+
 
             }
 

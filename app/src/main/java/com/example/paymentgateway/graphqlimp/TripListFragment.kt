@@ -5,14 +5,27 @@ import android.net.Uri
 import com.example.paymentgateway.TripsPage
 import android.os.Build
 import android.os.Bundle
+import android.transition.ChangeBounds
+import android.transition.ChangeImageTransform
+import android.transition.ChangeTransform
+import android.transition.TransitionInflater
+import android.transition.TransitionSet
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.annotation.RequiresApi
+import androidx.fragment.app.FragmentContainerView
+import androidx.fragment.app.replace
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavDirections
+import androidx.navigation.fragment.FragmentNavigatorExtras
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.Optional
 
@@ -20,6 +33,8 @@ import com.apollographql.apollo3.api.Optional
 import com.apollographql.apollo3.exception.ApolloException
 
 import com.example.paymentgateway.GetAllReservationQuery
+import com.example.paymentgateway.R
+import com.example.paymentgateway.TripsPageDirections
 
 import com.example.paymentgateway.databinding.FragmentTripListBinding
 import com.example.paymentgateway.databinding.ItemReservationBinding
@@ -29,17 +44,20 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 
 class TripListFragment : Fragment() {
-    private var _binding: FragmentTripListBinding? = null
 
-    private lateinit var reservationBinding: ItemReservationBinding
-    private val binding get() = _binding!!
+
+    private lateinit var binding: FragmentTripListBinding
+
+
     private lateinit var apolloClient: ApolloClient
     private lateinit var epoxyController: TripEpoxyController
     private var dateFilter: String?= null
- //   private var dateFilter = "upcomming"
+
+
     private var currentPage  = 1
     private var isLastPage = false
     private var isLoading = false
@@ -57,13 +75,14 @@ class TripListFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = FragmentTripListBinding.inflate(inflater, container, false)
+        binding = FragmentTripListBinding.inflate(inflater, container, false)  //_binding - binding
         return binding.root
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
 
         // Get date filter from arguments
         dateFilter = ((arguments?.getString(ARG_DATE_FILTER) ?: "upcomming"))
@@ -84,18 +103,18 @@ class TripListFragment : Fragment() {
             fetchTrips()
         }
 
-
-
-
+        binding.shimmerLayout.startShimmer()
 
     }
 
 
 
     private fun setupEpoxyRecyclerView() {
-        epoxyController = TripEpoxyController { trip ->
-            redirectEmail(trip)
-        }
+        epoxyController = TripEpoxyController(
+            onProfileImageClick = { trip, imageView ->
+                navigateToProfileDetail(trip, imageView)
+            }
+        )
 
         binding.recyclerView.apply {
             layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
@@ -126,10 +145,7 @@ class TripListFragment : Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun fetchTrips() {
-        if (isLoading) return
 
-        isLoading = true
-        binding.progressBar.visibility = View.VISIBLE
         binding.errorView.visibility = View.GONE
 
         lifecycleScope.launch {
@@ -149,13 +165,19 @@ class TripListFragment : Fragment() {
                 Log.d("response1", "Response ${response}")
 
                 handleResponse(response)
+
+
+
             } catch (e: ApolloException) {
                 showError("Network error: ${e.message}")
             } catch (e: Exception) {
                 showError("Something went wrong: ${e.message}")
             } finally {
-                isLoading = false
-                binding.progressBar.visibility = View.GONE
+//                isLoading = false
+//                binding.progressBar.visibility = View.GONE
+                binding.shimmerLayout.stopShimmer()
+                binding.shimmerLayout.visibility = View.GONE
+                binding.recyclerView.visibility=View.VISIBLE
             }
         }
     }
@@ -223,6 +245,50 @@ class TripListFragment : Fragment() {
         }
     }
 
+    private fun navigateToProfileDetail(trip: Trip, imageView: ImageView) {
+
+//        val navHostFragment = requireActivity().supportFragmentManager.findFragmentById(R.id.nav_graph) as NavHostFragment
+//        val extras = FragmentNavigatorExtras(imageView to trip.id)
+//        val action = TripsPageDirections.actionTripsPageToImageTransitionFragment2()
+//        findNavController().navigate(action, extras)
+        val  TRANSITION_DURATION = 300L
+        Log.d("MyData","profile_detail_${trip.id}")
+        Log.d("MyData","profile_detail_${trip.imageUrl}")
+
+        val profileDetailFragment = ImageTransitionFragment.newInstance(trip.id, trip.imageUrl)
+        // Create and configure a shared element transition
+        val transition = TransitionSet().apply {
+            addTransition(ChangeBounds())
+            addTransition(ChangeTransform())
+            addTransition(ChangeImageTransform())
+            duration = TRANSITION_DURATION
+            interpolator = FastOutSlowInInterpolator()
+        }
+        profileDetailFragment.sharedElementEnterTransition = transition
+
+//
+//        val moveTransition = TransitionInflater.from(requireContext())
+//            .inflateTransition(android.R.transition.move)
+//        moveTransition.duration = TRANSITION_DURATION
+
+//
+//        sharedElementEnterTransition=moveTransition
+//        postponeEnterTransition(300, TimeUnit.MILLISECONDS)
+        startPostponedEnterTransition()
+
+
+        activity?.supportFragmentManager?.beginTransaction()
+            ?.setReorderingAllowed(true)
+            ?.addSharedElement(imageView, trip.id)
+            ?.replace(R.id.fragment_containerView, profileDetailFragment)
+            ?.addToBackStack(null)
+            ?.commit()
+
+
+    }
+
+
+
     @RequiresApi(Build.VERSION_CODES.O)
     private fun formatDate(dateString: String): String {
         try {
@@ -237,18 +303,6 @@ class TripListFragment : Fragment() {
 
 
 
-
-    private fun redirectEmail(trip: Trip){
-        val intent = Intent(Intent.ACTION_SEND)
-        intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(trip.email))
-        intent.type = "message/rfc822"
-        requireContext().startActivity(intent)
-    }
-
-
-
-
-
     private fun showEmptyState(show: Boolean) {
         binding.emptyStateView.visibility = if (show) View.VISIBLE else View.GONE
         binding.recyclerView.visibility = if (show) View.GONE else View.VISIBLE
@@ -257,12 +311,22 @@ class TripListFragment : Fragment() {
     private fun showError(message: String) {
         binding.errorView.visibility = View.VISIBLE
         binding.errorTextView.text = message
+        binding.shimmerLayout.stopShimmer()
+        binding.shimmerLayout.visibility = View.GONE
+    }
+    override fun onResume() {
+        super.onResume()
+        if (binding.shimmerLayout.visibility == View.VISIBLE) {
+            binding.shimmerLayout.startShimmer()
+        }
+
+
+
     }
 
-
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    override fun onPause() {
+        binding.shimmerLayout.stopShimmer()
+        super.onPause()
     }
+
 }

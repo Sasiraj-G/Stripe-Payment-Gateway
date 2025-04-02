@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginTop="16dp"
+    android:background="#F1E4E4">
+<LinearLayout android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="24dp">
+
+        <!-- Profile image shimmer -->
+        <View
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/circle_shimmer_background" />
+
+
+        <View
+            android:layout_width="150dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="24dp"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/rounded_shimmer_background" />
+
+
+    </LinearLayout>
+
+    <!-- Address section -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/rounded_shimmer_background" />
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/rounded_shimmer_background" />
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="100dp"
+        android:background="@drawable/rounded_shimmer_background" />
+
+    <!-- Phone section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="24dp">
+
+        <View
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="@drawable/circle_shimmer_background" />
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="80dp"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/rounded_shimmer_background" />
+    </LinearLayout>
+
+    <!-- Email section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp">
+
+        <View
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="@drawable/circle_shimmer_background" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="50dp"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/rounded_shimmer_background" />
+    </LinearLayout>
+
+    <!-- Buttons section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="24dp">
+
+        <View
+            android:layout_width="120dp"
+            android:layout_height="38dp"
+            android:background="@drawable/rounded_shimmer_background" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+
+        <View
+            android:layout_width="80dp"
+            android:layout_height="38dp"
+            android:background="@drawable/rounded_shimmer_background" />
+    </LinearLayout>
+</LinearLayout>
+
+</androidx.cardview.widget.CardView>

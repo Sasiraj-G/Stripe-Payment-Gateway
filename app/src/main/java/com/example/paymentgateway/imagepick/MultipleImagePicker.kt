@@ -242,7 +242,6 @@ class MultipleImagePicker : AppCompatActivity(),MainCallbackAdapter,MainSimpleOn
         if (isLoading) return
         isLoading = true
         binding.progressBar.visibility = View.VISIBLE
-
             lifecycleScope.launch {
                 try {
                     val response = apolloClient.query(Step2ListDetailsQuery(listId = "1973", listIdInt = 1973, preview = Optional.present(false))).execute()
