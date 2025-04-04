@@ -152,10 +152,14 @@ dependencies {
     //shimmer effect
 
     implementation("com.facebook.shimmer:shimmer:0.5.0")
-
-
-
     implementation("androidx.navigation:navigation-ui-ktx:2.8.9")
+
+
+    //lottie animation airbn
+    implementation("com.airbnb.android:lottie:5.2.0")
+
+
+
 
 
 

@@ -34,6 +34,13 @@ class ProfilePage : Fragment() {
             val intent = Intent(requireContext(),MainActivity::class.java)
             startActivity(intent)
         }
+        binding.goToSplashScreen.setOnClickListener {
+            val intent = Intent(requireContext(),SplashScreen::class.java)
+            startActivity(intent)
+        }
     }
+
+
+
 
 }

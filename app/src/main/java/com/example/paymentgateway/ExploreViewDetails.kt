@@ -10,20 +10,29 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.Manifest
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 
 
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 
 import com.airbnb.epoxy.CarouselModel_
 import com.airbnb.epoxy.EpoxyController
 import com.airbnb.epoxy.EpoxyRecyclerView
+import com.airbnb.epoxy.carousel
+import com.airbnb.lottie.LottieComposition
+import com.airbnb.lottie.LottieCompositionFactory
+import com.airbnb.lottie.LottieDrawable
+import com.airbnb.lottie.LottieTask
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.Optional
 import com.example.paymentgateway.databinding.ActivityExploreViewDetailsBinding
@@ -33,10 +42,19 @@ import kotlinx.coroutines.launch
 
 import com.example.paymentgateway.wishlist.placeholder
 import com.example.paymentgateway.wishlist.wishlistItem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.BufferedInputStream
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.net.URL
 
 
 class ExploreViewDetails : AppCompatActivity() {
-    private lateinit var binding: ActivityExploreViewDetailsBinding
+    private var _binding: ActivityExploreViewDetailsBinding? = null
+    private val binding get() = _binding!!
     private lateinit var apolloClient: ApolloClient
 
     private lateinit var heartButton: ImageView
@@ -51,16 +69,25 @@ class ExploreViewDetails : AppCompatActivity() {
 
 
 
+
+
     @SuppressLint("SuspiciousIndentation")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityExploreViewDetailsBinding.inflate(layoutInflater)
+        _binding = ActivityExploreViewDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+
+        binding.lottieLoader.visibility=View.VISIBLE
+        binding.lottieLoader.playAnimation()
+
+        Log.d("anime","msg")
 
         apolloClient =
             ApolloClient.Builder().serverUrl("https://staging1.flutterapps.io/api/graphql").build()
 
         handleDeepLink(intent)
+
         fetchExploreData("732")
 
 
@@ -77,11 +104,14 @@ class ExploreViewDetails : AppCompatActivity() {
 
 
         binding.btnBack.setOnClickListener {
-            val intent= Intent(this,RentAllMainAactivity::class.java)
-            startActivity(intent)
+         onBackPressed()
         }
 
+
+
     }
+
+
 
 
     override fun onNewIntent(intent: Intent?) {
@@ -125,45 +155,41 @@ class ExploreViewDetails : AppCompatActivity() {
     }
 
 
-//    private fun showErrorAndFinish(message: String) {
-//        AlertDialog.Builder(this)
-//            .setTitle("Error")
-//            .setMessage(message)
-//            .setPositiveButton("OK") { _, _ ->
-//                if (Build.VERSION.SDK_INT >= 34) {
-//                    finishAndRemoveTask()
-//                } else {
-//                    finish()
-//                }
-//            }
-//            .setCancelable(false)
-//            .show()
-//    }
-
 
     private fun fetchExploreData(itemId : String?) {
        val id = itemId?.toInt()
         val roomId = id!!  // convert Int? to Int
         Log.d("DeepLink", "Inside Extracted ID: $roomId")
-        if (isLoading) return
-        isLoading = true
-        binding.progressBar.visibility = View.VISIBLE
+        Log.d("anime","fetching msg")
+        binding.lottieLoader.visibility=View.VISIBLE
+        binding.bottomSpace.visibility=View.GONE
 
         lifecycleScope.launch {
             try {
 
-
+                Log.d("anime","try block msg")
                 val query = ViewListingDetailsQuery(listId = roomId, preview = Optional.present(false))
                 val viewListingDetailsResponse = apolloClient.query(query).execute().data?.viewListing
                 Log.d("response","Viewlisting $viewListingDetailsResponse")
                handleResponse(viewListingDetailsResponse)
+                binding.lottieLoader.visibility=View.GONE
+                binding.bottomSpace.visibility=View.VISIBLE
+                binding.epoxyRecyclerView.visibility=View.VISIBLE
 
             } catch (e: Exception) {
                 Log.e("GraphQL", "Error fetching data", e)
+                binding.lottieLoader.visibility=View.VISIBLE
+                binding.bottomSpace.visibility=View.GONE
+                binding.epoxyRecyclerView.visibility=View.GONE
+                Log.d("anime"," catch block msg")
 
             }finally {
-                isLoading = false
-                binding.progressBar.visibility = View.GONE
+
+             //   binding.progressBar.visibility = View.GONE
+                Log.d("anime"," final block msg")
+             //   binding.epoxyRecyclerView.visibility=View.VISIBLE
+            //    binding.lottieLoader.visibility = View.GONE
+             //   binding.bottomSpace.visibility=View.VISIBLE
             }
         }
     }
@@ -210,53 +236,66 @@ class ExploreViewDetails : AppCompatActivity() {
     }
 
     private fun displayData(items: MutableList<ViewListingModel?>) {
-
+        val reviewsUser = getReviews()
+        val similarData = getSimilarListings()
         binding.epoxyRecyclerView.withModels{
-            val similarItem = items.map {
 
-                ExploreViewBindingModel_()
-                    .id("views")
-                    .exploreDetails(it)
+
+
+            // vertical scroll view
+
+          items.forEachIndexed { index, item ->
+             hostSelection {
+                 id("host_selection")
+                 host(item)
+
+              }
+           }
+            items.forEachIndexed { index, item ->
+                detailsPlace {
+                    id("details_place")
+                }
+            }
+            items.forEachIndexed { index, item ->
+                mapDetails {
+                    id("map_details")
+                    exploreDetails(item)
+                }
             }
 
+            //horizonal scrolling
+            val reviews = reviewsUser.map { review ->
+                ReviewsBindingModel_()
+                    .id("reviews")
+                    .review(review)
+            }
             CarouselModel_()
-                .id("recommended_listings")
-                .models(similarItem)
-                .numViewsToShowOnScreen(1f)
+                .id("reviews")
+                .models(reviews)
                 .addTo(this)
 
-//            items.forEachIndexed { index, item ->
-//                similarListings {
-//                    id("similar_listings")
-//                    similar(item)
-//                }
-//            }
+            items.forEachIndexed{ index, item ->
+                lastDetails {
+                    id("lastDetails $index")
+                    lastDetails(item)
 
-//
-//            val similar = items.map {
-//                SimilarListingsBindingModel_()
-//                    .id("godfather")
-//                    .similar(it)
-//            }
-//
-//            CarouselModel_()
-//                .id("similar_listings")
-//                .models(similar)
-//                .numViewsToShowOnScreen(1.25f)
-//                .addTo(this)
+                }
 
-//            val review=items.map{
-//                ReviewsBindingModel_()
-//                    .id("godfather")
-//                    .review(it)
-//            }
-//            CarouselModel_()
-//                .id("reviews")
-//                .models(review)
-//                .numViewsToShowOnScreen(1.25f)
-//                .addTo(this)
+            }
 
+               // horizontal scroll view using carousel model
+                 val similar = similarData.map { item ->
+                     SimilarListingsBindingModel_()
+                         .id("godfather")
+                         .similar(item)
+                 }
+
+                 CarouselModel_()
+                     .id("similar_listings")
+                     .models(similar)
+                     .addTo(this)
         }
+
 
 
     }
@@ -419,6 +458,7 @@ class ExploreViewDetails : AppCompatActivity() {
 
         override fun buildModels() {
 
+
             items.forEachIndexed { index, item ->
                 if (item.isPlaceholder) {
                     placeholder {
@@ -464,5 +504,27 @@ class ExploreViewDetails : AppCompatActivity() {
     }
 
 
+    override fun onPause() {
+        super.onPause()
+        binding.epoxyRecyclerView.visibility=View.GONE
+    }
+
+    override fun onResume() {
+        super.onResume()
+        fetchExploreData("732")
+    }
+
+
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding=null
+
+    }
+
+
+
+
 
 }
+

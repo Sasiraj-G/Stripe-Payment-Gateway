@@ -7,15 +7,19 @@
     <data>
         <variable
             name="review"
+            type="com.example.paymentgateway.ReviewModel" />
+        <variable
+            name="lastDetails"
             type="com.example.paymentgateway.ViewListingModel" />
 
     </data>
 
 
     <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
         app:cardCornerRadius="12dp"
+        android:background="@color/white"
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="16dp">
 
@@ -37,6 +41,7 @@
                     android:id="@+id/profileImage"
                     android:background="@drawable/circle_background"
                     tools:src="@tools:sample/backgrounds/scenic"
+                    app:imageUrl="@{lastDetails.imageUrl}"
                     />
 
                 <LinearLayout
@@ -48,7 +53,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/name"
                     android:layout_marginStart="12dp"
-                    android:text="James's Review"
+                    android:text="@{review.name}"
                     android:textStyle="bold"
                     android:textSize="20sp"/>
                     <RatingBar
@@ -70,7 +75,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="That was a great staty !!"
+                android:text="@{review.description}"
                 android:textSize="16sp"
                 android:visibility="visible"
                 android:layout_marginTop="12dp"
@@ -81,11 +86,11 @@
                 android:id="@+id/location"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="February, 2025"
+                android:text="@{review.date}"
                 android:textColor="#666666"
                 android:visibility="visible"
                 android:textSize="16sp"
-                android:layout_marginBottom="60dp"
+                android:layout_marginBottom="30dp"
                 android:layout_marginTop="12dp" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
