@@ -24,12 +24,14 @@ import androidx.appcompat.app.AppCompatActivity
 
 import androidx.core.animation.doOnEnd
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_DRAG
 import androidx.recyclerview.widget.ItemTouchHelper.DOWN
 
 import androidx.recyclerview.widget.ItemTouchHelper.UP
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.epoxy.EpoxyController
 import com.airbnb.epoxy.EpoxyRecyclerView
@@ -49,6 +51,7 @@ import com.example.paymentgateway.imagepick.testing.MainCallbackAdapter
 import com.example.paymentgateway.imagepick.testing.MainEpoxyTouchCallback
 import com.example.paymentgateway.imagepick.testing.MainSimpleOnItemTouchListener
 import com.example.paymentgateway.imagepick.testing.MainViewModel
+import com.veriff.sdk.internal.fa
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -76,7 +79,6 @@ class MultipleImagePicker : AppCompatActivity(),MainCallbackAdapter,MainSimpleOn
 
     private lateinit var viewModel: MainViewModel
 
-    var COVER_PHOTO_INDEX =0
 
     private val okHttpClient by lazy {
         OkHttpClient.Builder().build()
@@ -180,49 +182,66 @@ class MultipleImagePicker : AppCompatActivity(),MainCallbackAdapter,MainSimpleOn
     }
 
 
-    private fun setupRecyclerViews() {
-        val gridLayoutManager = GridLayoutManager(this, 2)
-        binding.imageRecyclerView.layoutManager = gridLayoutManager
+private fun setupRecyclerViews() {
+    val gridLayoutManager = GridLayoutManager(this, 2)
+    binding.imageRecyclerView.layoutManager = gridLayoutManager
+    binding.imageRecyclerView.itemAnimator = null // Add this line to disable default animations
 
-        // Initialize the controller
-        controller = MainController(this, ::openImagePicker)
+    // Initialize the controller
+    controller = MainController(this, ::openImagePicker)
 
-        binding.imageRecyclerView.adapter = controller.adapter //new line add
-        binding.imageRecyclerView.setController(controller)
+    binding.imageRecyclerView.adapter = controller.adapter
+    binding.imageRecyclerView.setController(controller)
 
-        val touchCallback = MainEpoxyTouchCallback(controller, object : MainEpoxyTouchCallback.OnRowMoveListener {
-            override fun onMoved(movingRowId: String, shiftingRowId: String) {
+    val touchCallback = MainEpoxyTouchCallback(controller, object : MainEpoxyTouchCallback.OnRowMoveListener {
+        override fun onMoved(movingRowId: String, shiftingRowId: String) {
+            // Disable nested scrolling during drag
+            binding.imageRecyclerView.itemAnimator = null
+            binding.imageRecyclerView.isNestedScrollingEnabled = false
 
-                viewModel.moveRow(movingRowId, shiftingRowId)
+            viewModel.moveRow(movingRowId, shiftingRowId)
 
-                // Handle the move operation in local data too
-                val movingIndex = uploadedImages.indexOfFirst { it == movingRowId }
-                val shiftingIndex = uploadedImages.indexOfFirst { it == shiftingRowId }
 
-                if (movingIndex != -1 && shiftingIndex != -1) {
-                    val temp = uploadedImages[movingIndex]
-                    uploadedImages.removeAt(movingIndex)
-                    uploadedImages.add(shiftingIndex, temp)
-                    controller.setData(uploadedImages, selectedImages)
-                    controller.requestModelBuild()
-                }
+            val movingIndex = uploadedImages.indexOfFirst { it == movingRowId }
+            val shiftingIndex = uploadedImages.indexOfFirst { it == shiftingRowId }
+            Log.d("DragDrop", "onMoved: movingIndex=$movingIndex, shiftingIndex=$shiftingIndex, uploadedImages.size=${uploadedImages.size}")
+
+            if (movingIndex != -1 && shiftingIndex != -1) {
+
+                Collections.swap(uploadedImages, movingIndex, shiftingIndex)
+                Log.d("DragDrop", "onMoved: swapped uploadedImages=$uploadedImages")
+
+                Log.d("DragDrop", "onMoved: calledcontroller.setData")
+
+
+                Log.d("DragDrop", "onMoved: called controller.requestModelBuild")
+
             }
-        })
+            controller.setData(uploadedImages, selectedImages)
+
+            controller.requestModelBuild()
 
 
-        itemTouchHelper = ItemTouchHelper(touchCallback)
-        itemTouchHelper.attachToRecyclerView(binding.imageRecyclerView)
-        binding.imageRecyclerView.addOnItemTouchListener(MainSimpleOnItemTouchListener(this))
-        controller.setItemTouchHelper(itemTouchHelper)
-        controller.setData(uploadedImages, selectedImages)
+            // Re-enable nested scrolling after drag
+            binding.imageRecyclerView.isNestedScrollingEnabled =true
+              binding.imageRecyclerView.itemAnimator = DefaultItemAnimator()
+        }
 
-        controller.requestModelBuild() //new
+    })
 
-    }
+    itemTouchHelper = ItemTouchHelper(touchCallback)
+    itemTouchHelper.attachToRecyclerView(binding.imageRecyclerView)
+    binding.imageRecyclerView.addOnItemTouchListener(MainSimpleOnItemTouchListener(this))
+    controller.setItemTouchHelper(itemTouchHelper)
+    controller.setData(uploadedImages, selectedImages)
+    controller.requestModelBuild()
+}
 
 
     override fun onDragStart() {
         binding.imageRecyclerView.isNestedScrollingEnabled = false
+
+
     }
 
     override fun onDragEnd() {
@@ -242,6 +261,7 @@ class MultipleImagePicker : AppCompatActivity(),MainCallbackAdapter,MainSimpleOn
         if (isLoading) return
         isLoading = true
         binding.progressBar.visibility = View.VISIBLE
+
             lifecycleScope.launch {
                 try {
                     val response = apolloClient.query(Step2ListDetailsQuery(listId = "1973", listIdInt = 1973, preview = Optional.present(false))).execute()

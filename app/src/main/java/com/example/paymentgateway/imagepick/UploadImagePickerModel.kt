@@ -36,9 +36,14 @@ abstract class UploadImagePickerModel : EpoxyModelWithHolder<UploadImagePickerMo
     lateinit var gridId: String //new
 
     @EpoxyAttribute
+    var itemId: String? = null
+
+    @EpoxyAttribute
     var onImageClick: ((View) -> Unit)? = null
 
     override fun getDefaultLayout() = R.layout.item_upload_server
+
+
     @SuppressLint("ClickableViewAccessibility")
     override fun bind(holder: Holder) {
         Glide.with(holder.binding.root.context)
@@ -65,6 +70,9 @@ abstract class UploadImagePickerModel : EpoxyModelWithHolder<UploadImagePickerMo
             binding.cardImageContainer.setOnTouchListener(null)
         }
     }
+
+
+
 
 
     class Holder : EpoxyHolder() {

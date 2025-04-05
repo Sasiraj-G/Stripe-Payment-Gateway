@@ -22,7 +22,7 @@ class MainController(
     private var selectedImages: List<Uri> = emptyList()
     private var itemTouchHelper: ItemTouchHelper? = null
     fun setData(uploadedImages: List<String>, selectedImages: List<Uri>) {
-        this.uploadedImages = uploadedImages
+        this.uploadedImages = uploadedImages.toMutableList()
         this.selectedImages = selectedImages
         requestModelBuild()
     }
@@ -57,6 +57,7 @@ class MainController(
             }
         }
         uploadedImages.forEachIndexed { index, imageUrl ->
+
             uploadImagePicker {
                 id("uploaded" + index)
                 imageUrl("https://staging1.flutterapps.io/images/upload/" + imageUrl)

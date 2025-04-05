@@ -52,7 +52,6 @@ class MainViewModel : ViewModel() {
 
     fun updateRows(newRows: List<Row>) {
         val currentRows = rowsData.value ?: mutableListOf()
-
         _rowsData.value = currentRows
     }
 
